@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>{{ titre }}</title>
+	<link rel="stylesheet" href="{{ base_url('../vendor/zurb/foundation/dist/css/foundation.min.css') }}"/>
+</head>
+<body>
+
+{% include "navbar.twig" %}
+
+{% block contenu %}
+{% endblock %}
+
+<script src="{{ base_url('../vendor/components/jquery/jquery.min.js') }}"></script>
+<script src="{{ base_url('../vendor/zurb/foundation/dist/js/foundation.min.js') }}"></script>
+<script>
+	$(document).foundation();
+</script>
+</body>
+</html>

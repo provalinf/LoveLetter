@@ -12,6 +12,7 @@
  * <examples>
  *
  * @property Welcome_m $Welcome_m
+ * @property Users_m $Users_m
  *
  *
  *

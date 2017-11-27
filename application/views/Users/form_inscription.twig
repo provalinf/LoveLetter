@@ -1,0 +1,71 @@
+{% extends "layout.twig" %}
+{% block contenu %}
+	<div class="grid-x">
+		<div class="cell">full width cell</div>
+		<div class="cell">full width cell</div>
+	</div>
+	<div class="grid-x">
+		<div class="small-6 cell">6 cells</div>
+		<div class="small-6 cell">6 cells</div>
+	</div>
+	<div class="grid-x">
+		<div class="medium-6 large-4 cell">12/6/4 cells</div>
+		<div class="medium-6 large-8 cell">12/6/8 cells</div>
+	</div>
+	<div class="row">
+		<div class="panel">
+			{{ form_open('Users_c/validFormInscription') }}
+
+			<label for="login">Pseudo
+			<input type="text" name="login" value="{{ set_value('login') }}"/></label>
+			{{ form_error('login') }}
+
+			<label for="pass">Mot de passe
+			<input type="password" name="pass" value="{{ set_value('pass') }}"/></label>
+			{{ form_error('pass') }}
+
+			<label for="pass2">Confirmation de mot de passe
+			<input type="password" name="pass2" value="{{ set_value('pass2') }}"/></label>
+			{{ form_error('pass2') }}
+
+			<input class="button small" type="submit" value="Inscription"/>
+			<input class="button small secondary" type="reset" value="Réinitialiser">
+
+			{{ form_close() }}
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="small-12 columns">
+			<div class="row">
+				<div class="small-12 columns">
+					<p> this is where my content goes. Since I"m a nested row, there should be some default padding around me.  If you need more, you can use SASS to write your own custom class and add more padding if needed. </p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row"> <!--Container Row -->
+		<!-- Title -->
+		<div class="sub-title-contain row">
+			<div class="small-12 columns">
+				<h2 class="sub-title">Title</h2>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="link-row">
+				<a href="#general" class="link">General</a>
+				<a href="#docs" class="link">Documents</a>
+			</div>
+		</div>
+
+		<div id="title" class="row">
+			<h4>Title</h4>
+		</div>
+
+		<div class="row">
+			<p>Text</p>
+		</div>
+	</div> <!-- Container Row -->
+{% endblock %}
