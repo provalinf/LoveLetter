@@ -8,6 +8,7 @@ class Welcome extends CI_Controller {
 	public function __construct() {
 		parent::__construct();
 		$this->load->database();
+		$this->load->helper('url');
 		$this->load->library('Twig');
 		$this->load->model('Welcome_m');
 	}
@@ -32,6 +33,7 @@ class Welcome extends CI_Controller {
 		echo "<pre>";
 		print_r($this->Welcome_m->test());
 		echo "</pre>";
-		$this->load->view('welcome_message');
+		//$this->load->view('welcome_message');
+		redirect('/Users_c/connexion');
 	}
 }

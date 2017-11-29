@@ -6,11 +6,11 @@
 			{{ form_open('Users_c/form_valid_connexion') }}
 
 			<label for="login">Pseudo
-			<input type="text" name="login" value="{{ set_value('login') }}"/></label>
+				<input type="text" name="login" value="{{ set_value('login') }}"/></label>
 			{{ form_error('login') }}
 
 			<label for="pass">Mot de passe
-			<input type="password" name="pass" value="{{ set_value('pass') }}"/></label>
+				<input type="password" name="pass" value="{{ set_value('pass') }}"/></label>
 			{{ form_error('pass') }}
 
 			{% if erreur is defined %}<span class="error">{{ erreur }}</span>{% endif %}
@@ -20,5 +20,36 @@
 
 			{{ form_close() }}
 		</div>
+	</div>
+
+
+	<div class="row">
+
+		<!-- map -->
+		<div class="clearfix"></div>
+
+		<!-- contat-from-wrapper -->
+		<div class="contat-from-wrapper">
+			<h2>Connectez-vous !</h2><br/><br/>
+			<div id="message"></div>
+			<form method="post" action="php/contactfrom.php" name="cform" id="cform">
+				<div class="row">
+					<div class="col-md-6 col-lg-6 col-sm-6 col-xs-12">
+						<input name="name" id="name" type="text" placeholder="Whats your name">
+					</div>
+
+					<div class="col-md-6 col-lg-6 col-sm-6 col-xs-12">
+						<input name="email" id="email" type="email" placeholder="Whats your email">
+					</div>
+				</div>
+
+				<div class="clearfix"></div>
+				<textarea name="comments" id="comments" cols="" rows="" placeholder="Whats in your mind"></textarea>
+				<div class="clearfix"></div>
+				<input name="" type="submit" value="Send email">
+				<div id="simple-msg"></div>
+			</form>
+		</div>
+		<!-- contat-from-wrapper -->
 	</div>
 {% endblock %}
