@@ -8,8 +8,10 @@
 	<title>{{ titre }}</title>
 	<!-- style -->
 	<link href="{{ base_url('../assets/theme/avana/css/style.css') }}" rel="stylesheet" type="text/css">
+	<link href="{{ base_url('../assets/theme/loveletter.css') }}" rel="stylesheet" type="text/css">
 	<!-- Bootstrap CSS -->
-	<link href="{{ base_url('../assets/theme/avana/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+	<link href="{{ base_url('../vendor/twbs/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+	{#<link href="{{ base_url('../assets/theme/avana/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">#}
 	<!-- responsive -->
 	<link href="{{ base_url('../assets/theme/avana/css/responsive.css') }}" rel="stylesheet" type="text/css">
 	<!-- font-awesome -->
@@ -23,15 +25,19 @@
 
 <!-- header -->
 <header role="header">
+
 	<div class="container">
 		{% include "header.twig" %}
 
-		<!-- nav -->
-		{% include "navbar.twig" with {'position': 'head'} only %}
-		<!-- nav -->
 	</div>
 </header>
 <!-- header -->
+
+<!-- nav -->
+{% include "navbar.twig" with {'position': 'head'} only %}
+<!-- nav -->
+
+
 
 <!-- main -->
 <main role="main-home-wrapper" class="container">

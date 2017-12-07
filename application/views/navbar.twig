@@ -1,8 +1,78 @@
-<nav role="{{ position == 'head' ? "header-nav" : "footer-nav" }}" class="{{ position != 'head' ? : 'navy'}}">
+{#<nav role="{{ position == 'head' ? "header-nav" : "footer-nav" }}" class="{{ position != 'head' ? : 'navy'}}">
 	<ul>
 		<li class="nav-active"><a href="index.html" title="Work">Work</a></li>
 		<li><a href="about.html" title="About">About</a></li>
 		<li><a href="blog.html" title="Blog">Blog</a></li>
 		<li><a href="contact.html" title="Contact">Contact</a></li>
 	</ul>
-</nav>
+</nav>#}
+{% if position == 'head' %}
+
+	<style>
+		.navbar {
+			-moz-box-shadow: 0px 0px 2px 0px #656565;
+			-webkit-box-shadow: 0px 0px 2px 0px #656565;
+			-o-box-shadow: 0px 0px 2px 0px #656565;
+			box-shadow: 0px 0px 2px 0px #656565;
+			filter:progid:DXImageTransform.Microsoft.Shadow(color=#656565, Direction=NaN, Strength=2);
+		}
+		@media (min-width: 1400px) {
+			.navbar {
+				margin: 0 auto;
+				width: 70%;
+				-moz-border-radius: 5px;
+				-webkit-border-radius: 5px;
+				border-radius: 5px;
+			}
+		}
+	</style>
+
+
+	{##}
+	<div class="col-md-auto">
+		<nav class="navbar navbar-expand-lg navbar-light bg-light">
+			<a class="navbar-brand" href="#">
+				<img src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" width="30" height="30" class="d-inline-block align-top" alt="">
+				LoveLetter
+			</a>
+			<div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+				<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+					<li class="nav-item active">
+						<a class="nav-link" href="#">Index</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Scores</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Jeu</a>
+					</li>
+				</ul>
+				<ul class="navbar-nav mt-2 mt-lg-0">
+					<li class="nav-item">
+						<a class="nav-link" href="#">Aide</a>
+					</li><li class="nav-item">
+						<a class="nav-link" href="#">Inscription</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Connexion</a>
+					</li>
+				</ul>
+				{#<form class="form-inline my-2 my-lg-0">
+					<input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+					<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+				</form>#}
+			</div>
+		</nav>
+	</div>
+{% else %}
+	<nav role="footer-nav" class="navy">
+		<ul>
+			<li><a href="index.html" title="Index">Index</a></li>
+			<li><a href="about.html" title="Scores">Scores</a></li>
+			<li><a href="blog.html" title="Jeu">Jeu</a></li>
+			<li><a href="contact.html" title="Aide">Aide</a></li>
+			<li><a href="contact.html" title="Inscription">Inscription</a></li>
+			<li><a href="contact.html" title="Connexion">Connexion</a></li>
+		</ul>
+	</nav>
+{% endif %}
