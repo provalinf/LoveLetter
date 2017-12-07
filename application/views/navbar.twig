@@ -38,23 +38,23 @@
 			<div class="collapse navbar-collapse" id="navbarTogglerDemo01">
 				<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
 					<li class="nav-item active">
-						<a class="nav-link" href="#">Index</a>
+                        {{ anchor('index', 'Index', {'class' : 'nav-link', 'title' : 'Index'}) }}
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="#">Scores</a>
+                        {{ anchor('Users_c/getScore', 'Scores', {'class' : 'nav-link', 'title' : 'Scores'}) }}
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="#">Jeu</a>
+                        {{ anchor('Game_c/index', 'Jeu', {'class' : 'nav-link', 'title' : 'Jeu'}) }}
 					</li>
 				</ul>
 				<ul class="navbar-nav mt-2 mt-lg-0">
 					<li class="nav-item">
-						<a class="nav-link" href="#">Aide</a>
+                        {{ anchor('', 'Aide', {'class' : 'nav-link', 'title' : 'Aide'}) }}
 					</li><li class="nav-item">
-						<a class="nav-link" href="#">Inscription</a>
+                        {{ anchor('Users_c/inscription', 'Inscription', {'class' : 'nav-link', 'title' : 'Inscription'}) }}
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="#">Connexion</a>
+                        {{ anchor('Users_c/connexion', 'Connexion', {'class' : 'nav-link', 'title' : 'Connexion'}) }}
 					</li>
 				</ul>
 				{#<form class="form-inline my-2 my-lg-0">
@@ -67,12 +67,12 @@
 {% else %}
 	<nav role="footer-nav" class="navy">
 		<ul>
-			<li><a href="index.html" title="Index">Index</a></li>
-			<li><a href="about.html" title="Scores">Scores</a></li>
-			<li><a href="blog.html" title="Jeu">Jeu</a></li>
-			<li><a href="contact.html" title="Aide">Aide</a></li>
-			<li><a href="contact.html" title="Inscription">Inscription</a></li>
-			<li><a href="contact.html" title="Connexion">Connexion</a></li>
+            {{ anchor('index', 'Index', {'class' : 'nav-link', 'title' : 'Index'}) }};
+            {{ anchor('Users_c/getScore', 'Scores', {'class' : 'nav-link', 'title' : 'Scores'}) }};
+            {{ anchor('', 'Aide', {'class' : 'nav-link', 'title' : 'Aide'}) }};
+            {{ anchor('Game_c/index', 'Jeu', {'class' : 'nav-link', 'title' : 'Jeu'}) }};
+            {{ anchor('Users_c/inscription', 'Inscription', {'class' : 'nav-link', 'title' : 'Inscription'}) }};
+            {{ anchor('Users_c/connexion', 'Connexion', {'class' : 'nav-link', 'title' : 'Connexion'}) }};
 		</ul>
 	</nav>
 {% endif %}

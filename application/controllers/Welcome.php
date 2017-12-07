@@ -30,10 +30,6 @@ class Welcome extends CI_Controller {
 	 * @see https://codeigniter.com/user_guide/general/urls.html
 	 */
 	public function index() {
-		echo "<pre>";
-		print_r($this->Welcome_m->test());
-		echo "</pre>";
-		//$this->load->view('welcome_message');
-		redirect('/Users_c/connexion');
+        $this->twig->display('welcome', ['titre' => "Bienvenue"]);
 	}
 }
