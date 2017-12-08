@@ -4,7 +4,7 @@
     <div class="container">
         <div class="row justify-content-md-center">
             <div class="col col-lg-2">
-                {{ form_open('Game_c/validFormCommencer') }}
+                {{ form_open('Game_c/validFormCreerPartie') }}
 
                 <label for="nomPartie">Nom
                     <input type="text" name="nomPartie" value="{{ set_value('nom') }}"/></label>
@@ -20,21 +20,25 @@
                 {{ form_close() }}
             </div>
             <div class="col-md-auto">
-                Variable width content
+                {# text ici #}
             </div>
             <div class="col col-lg-2">
-                3 of 3
+                <table>
+
+                </table>
             </div>
         </div>
         <div class="row">
             <div class="col">
-                1 of 3
+                {# text ici #}
             </div>
             <div class="col-md-auto">
-                Variable width content
+                {{ form_open('Game_c/rejoindrePartie') }}
+                <input class="button small" type="submit" value="Rejoindre Partie"/>
+                {{ form_close() }}
             </div>
             <div class="col col-lg-2">
-                3 of 3
+                {# text ici #}
             </div>
         </div>
     </div>
