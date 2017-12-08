@@ -27,4 +27,14 @@ class Users_m extends CI_Model {
 	}
 
 
+    public function getScore()
+    {
+        $this->db->select("*");
+        $this->db->from("score_manche");
+        $query = $this->db->get();
+
+        return $query->result_array();
+    }
+
+
 }
