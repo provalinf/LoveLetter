@@ -17,7 +17,6 @@ class Users_c extends CI_Controller {
 
 	public function connexion($donnees = array()) {
 		$this->check_isConnected();
-
 		$this->twig->display('Users/form_connexion', array_merge($donnees, ['titre' => "Page de connexion"]));
 	}
 

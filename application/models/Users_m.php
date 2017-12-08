@@ -4,7 +4,7 @@ class Users_m extends CI_Model {
 
 	public function add_user($donnees) {
 		$data = array(
-			'login'              => $donnees['login'], 'mot_de_passe' => $donnees['pass'],
+			'PSEUDO'              => $donnees['PSEUDO'], 'mot_de_passe' => $donnees['pass'],
 			'derniere_connexion' => $donnees['last_connect']
 		);
 

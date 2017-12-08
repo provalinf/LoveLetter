@@ -1,15 +1,42 @@
 {% extends "layout.twig" %}
 {% block contenu %}
 
-<div class="container">
-    <div class="row justify-content-md-center">
-        <div class="col-lg-1">
-            1 of 3
+    <div class="container">
+        <div class="row justify-content-md-center">
+            <div class="col col-lg-2">
+                {{ form_open('Game_c/validFormCommencer') }}
+
+                <label for="nomPartie">Nom
+                    <input type="text" name="nomPartie" value="{{ set_value('nom') }}"/></label>
+                {{ form_error('nom') }}
+
+                <label for="nbJoueurs">Nombre de joueurs
+                    <input type="number" min="2" max="4" name="nbJoueurs" value="{{ set_value('nbJoueurs', 2) }}"/></label>
+                {{ form_error('nbJoueurs') }}
+
+                <input class="button small" type="submit" value="Creer Partie"/>
+                <input class="button small secondary" type="reset" value="Réinitialiser">
+
+                {{ form_close() }}
+            </div>
+            <div class="col-md-auto">
+                Variable width content
+            </div>
+            <div class="col col-lg-2">
+                3 of 3
+            </div>
         </div>
-        <div class="col-lg-2">
-            <img src="{{ base_url("../assets/img/img1.jpg") }}" class="img-fluid" alt="Responsive image">
+        <div class="row">
+            <div class="col">
+                1 of 3
+            </div>
+            <div class="col-md-auto">
+                Variable width content
+            </div>
+            <div class="col col-lg-2">
+                3 of 3
+            </div>
         </div>
     </div>
-</div>
 
 {% endblock %}
