@@ -56,11 +56,11 @@ class Users_c extends CI_Controller {
 
 	public function validFormInscription() {
 		$this->check_isConnected();
-		$this->form_validation->set_rules('login', 'Pseudo', 'trim|required|is_unique[UTILISATEUR.PSEUDO]|min_length[4]|max_length[8]');
+		$this->form_validation->set_rules('login', 'Pseudo', 'trim|required|is_unique[UTILISATEUR.LOGIN]|min_length[4]|max_length[8]');
 		$this->form_validation->set_rules('pass', 'Mot de passe', 'trim|required|min_length[6]|max_length[12]');
 		$this->form_validation->set_rules('pass2', 'Confirmation de mot de passe', 'trim|required|matches[pass]');
 
-		$this->form_validation->set_error_delimiters('<span class="error">', '</span>');
+		$this->form_validation->set_error_delimiters('<small class="form-text text-muted">', '</small>');
 
 		$donnees = array(
 			'login' => $this->input->post('login'), 'pass' => $this->input->post('pass')

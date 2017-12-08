@@ -1,23 +1,35 @@
 {% extends "layout.twig" %}
 {% block contenu %}
-	<div class="row">
-		<div class="panel">
-			{{ form_open('Users_c/validFormInscription') }}
+	<div class="container contain-background">
+		<div class="row justify-content-md-center">
+			<div class="col-">
+				<h1>Inscrivez-vous !</h1>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				{{ form_open('Users_c/validFormInscription') }}
+				<div class="form-group">
+					<label for="login">Pseudo</label>
+					<input type="text" name="login" class="form-control" placeholder="Pseudo" value="{{ set_value('login') }}"/>
+					{{ form_error('login') }}
+				</div>
 
-			<label for="login">Pseudo
-			<input type="text" name="login" value="{{ set_value('login') }}"/></label>
-			{{ form_error('login') }}
-
-			<label for="pass">Mot de passe
-			<input type="password" name="pass" value="{{ set_value('pass') }}"/></label>
-			{{ form_error('pass') }}
-
-			<label for="pass2">Confirmation de mot de passe
-			<input type="password" name="pass2" value="{{ set_value('pass2') }}"/></label>
-			{{ form_error('pass2') }}
-
-			<input class="button small" type="submit" value="Inscription"/>
-			<input class="button small secondary" type="reset" value="Réinitialiser">
+				<div class="form-group">
+					<label for="pass">Mot de passe</label>
+					<input type="password" name="pass" class="form-control" placeholder="Mot de passe"
+						   value="{{ set_value('pass') }}"/>
+					{{ form_error('pass') }}
+				</div>
+				<div class="form-group">
+					<label for="pass2">Confirmation de mot de passe</label>
+					<input type="password" name="pass2" class="form-control" placeholder="Confirmation"
+						   value="{{ set_value('pass2') }}"/>
+					{{ form_error('pass2') }}
+				</div>
+				<input class="btn btn-primary" type="submit" value="Inscription"/>
+				<input class="btn btn-secondary" type="reset" value="Réinitialiser">
+			</div>
 
 			{{ form_close() }}
 		</div>
