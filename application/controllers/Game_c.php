@@ -1,6 +1,10 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
+/**
+ * @property  Game_m
+ */
 class Game_c extends CI_Controller {
+
     public function __construct() {
         parent::__construct();
         $this->load->database();
@@ -16,10 +20,16 @@ class Game_c extends CI_Controller {
 
     public function commencer() {
         $this->check_isConnected();
+        $this->Game_m->fillGameList();
         $this->twig->display('game', ['titre' => "Commencement"]);
     }
 
-    public function validFormCommencer() {
+    public function rejoindrePartie(){
+        $this->check_isConnected();
+
+    }
+
+    public function validFormCreerPartie() {
         $this->check_isConnected();
         $this->form_validation->set_rules('Nom', 'Nom', 'trim|required|min_length[2]|max_length[20]');
         $this->form_validation->set_rules('NombreJoueurs', 'NombreJoueurs', 'trim|required|min_length[2]|max_length[4]');
