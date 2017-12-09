@@ -10,7 +10,6 @@ class Users_c extends CI_Controller {
 		$this->load->library(array('session', 'form_validation', 'encryption'));
 		$this->load->model('Users_m');
 	}
-
 	private function check_isConnected() {
 		if (!empty($this->session->userdata('login'))) redirect(base_url());
 	}
@@ -80,6 +79,10 @@ class Users_c extends CI_Controller {
         $this->check_isConnected();
         $listescore = $this->Users_m->getScore();
         $this->twig->display('score', ['titre' => "Scores", 'liste_score' => $listescore]);
+    }
+
+    public function index(){
+        $this->twig->display('welcome', ['titre' => "Bienvenue"]);
     }
 
 }

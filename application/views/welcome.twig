@@ -1,18 +1,30 @@
 {% extends "layout.twig" %}
 {% block contenu %}
 
-    <div class="container">
-        <div class="row justify-content-md-center">
-            <div class="col-lg-1">
-                1 of 3
-            </div>
-            <div class="col-lg-2">
-                <img src="{{ base_url("../assets/img/img1.jpg") }}" class="img-fluid" alt="Responsive image">
-            </div>
+
+    <div class="row">
+        <div class="col"> <img src="{{ base_url("../assets/img/titre1.png") }}" style= "width: 500px" alt="Responsive image"></div>
+        <div class="col">
+
+            <p>
+                Love Letter est un jeu de cartes, réalisé par Seiji Kanai et
+            illustré par Andrew Hepworth et Jeff Himmelman. Il s’agit d’un
+            jeu dans lequel vous devrez réussir à courtiser la princesse Annette
+            , qui se morfond depuis l’arrestation de la reine Marianna.
+            </p>
+
+            <p>
+            Comme la princesse est étroitement surveillée, vous devrez arriver à lui
+            faire parvenir vos billets doux à l’aide d’intermédiaires présents au château.
+            </p>
+
+            <p>
+            Love Letter est un jeu de cartes qui vous placera dans la peau d’un courtisan,
+            prêt à tout pour s’attirer les faveurs de la princesse. Il faudra donc vous
+            montrer impitoyable à l’égard de vos rivaux pour gagner son affection.
+            </p>
+
         </div>
+        <div class="w-100"></div>
     </div>
-
 {% endblock %}
-
-
-
