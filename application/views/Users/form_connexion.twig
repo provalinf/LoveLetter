@@ -35,21 +35,24 @@
 		</div>
 		<div class="row">
 			<div class="col">
-				<form>
-					<div class="form-group">
-						<label for="login">Votre login</label>
-						<input type="text" class="form-control" id="login" aria-describedby="loginError"
-							   placeholder="Pseudo">
-						<small id="loginError" class="form-text text-muted">Erreur, ce login ne doit pas être vide ou
-							alors, il existe déjà
-						</small>
-					</div>
-					<div class="form-group">
-						<label for="password">Mot de passe</label>
-						<input type="password" class="form-control" id="password" placeholder="Mot de passe">
-					</div>
-					<button type="submit" class="btn btn-primary">Submit</button>
-				</form>
+				{{ form_open('Users_c/form_valid_connexion') }}
+				<div class="form-group">
+					<label for="login">Votre login</label>
+					<input type="text" class="form-control" name="login" placeholder="Pseudo"
+						   value="{{ set_value('login') }}">
+					{{ form_error('login') }}
+				</div>
+				<div class="form-group">
+					<label for="password">Mot de passe</label>
+					<input type="password" class="form-control" name="password" placeholder="Mot de passe"
+						   value="{{ set_value('password') }}">
+					{{ form_error('password') }}
+				</div>
+				<div class="form-group">
+					{% if erreur is defined %}<span class="form-text text-muted">{{ erreur }}</span>{% endif %}
+				</div>
+				<button type="submit" class="btn btn-primary">Submit</button>
+				{{ form_close() }}
 			</div>
 		</div>
 

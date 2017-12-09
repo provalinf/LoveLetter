@@ -9,6 +9,7 @@ class Users_c extends CI_Controller {
 		$this->load->helper(array('form', 'url'));
 		$this->load->library(array('session', 'form_validation', 'encryption'));
 		$this->load->model('Users_m');
+		$this->twig->addGlobal('globlogin', $this->session->userdata('login'));
 	}
 
 	private function check_isConnected() {
@@ -24,18 +25,18 @@ class Users_c extends CI_Controller {
 		$this->check_isConnected();
 
 		$this->form_validation->set_rules('login', 'Login', 'trim|required');
-		$this->form_validation->set_rules('pass', 'Mot de passe', 'trim|required');
+		$this->form_validation->set_rules('password', 'Mot de passe', 'trim|required');
 
-		$this->form_validation->set_error_delimiters('<span class="error">', '</span>');
+		$this->form_validation->set_error_delimiters('<small class="form-text text-muted">', '</small>');
 
 		$donnees = array(
-			'login' => $this->input->post('login'), 'password' => $this->encrypt->encode($this->input->post('pass'))
+			'login' => $this->input->post('login'), 'password' => $this->input->post('password')
 		);
 		if ($this->form_validation->run() == False) {
-			$this->twig->display('form_connexion', $donnees);
+			$this->connexion($donnees);
 		} else {
-			if (($donnees_session = $this->Users_m->verif_connexion($donnees)) != False) {
-				$this->session->set_userdata($donnees_session);
+			if (($donnees_session = $this->Users_m->verif_connexion($donnees)) != False && $this->encryption->decrypt($donnees_session['MOT_DE_PASSE']) == $donnees['password']) {
+				$this->session->set_userdata(['login' => $donnees_session['LOGIN']]);
 				redirect(base_url());
 			} else {
 				$donnees['erreur'] = "Pseudo ou mot de passe incorrect";
@@ -69,7 +70,7 @@ class Users_c extends CI_Controller {
 		if ($this->form_validation->run() == False) {
 			$this->inscription($donnees);
 		} else {
-			$donnees['pass'] = $this->encrypt->encode($donnees['pass']);
+			$donnees['pass'] = $this->encryption->encrypt($donnees['pass']);
 			$this->Users_m->add_user($donnees);
 			redirect(base_url());
 		}

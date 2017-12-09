@@ -4,23 +4,20 @@ class Users_m extends CI_Model {
 
 	public function add_user($donnees) {
 		$data = array(
-			'PSEUDO'              => $donnees['PSEUDO'], 'mot_de_passe' => $donnees['pass'],
-			'derniere_connexion' => $donnees['last_connect']
+			'Login'              => $donnees['login'], 'mot_de_passe' => $donnees['pass']
 		);
 
-		$this->db->insert('utilisateur', $data);
+		return $this->db->insert('Utilisateur', $data);
 	}
 
-	public function update_user($id, $donnees) {
+	/*public function update_user($id, $donnees) {
 		$this->db->where("id_user", $id);
-		$this->db->update("user", $donnees);
-	}
+		return $this->db->update("Utiisateur", $donnees);
+	}*/
 
 	public function verif_connexion($donnees) {
-		$this->db->select("login");
-		$this->db->from("utilisateur");
+		$this->db->from("Utilisateur");
 		$this->db->where('login', $donnees['login']);
-		$this->db->where('mot_de_passe', $donnees['password']);
 		$query = $this->db->get();
 
 		return (!empty($query)) ? $query->row_array() : false;

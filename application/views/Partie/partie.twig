@@ -1,0 +1,71 @@
+{% extends "layout.twig" %}
+{% block contenu %}
+
+	<div class="container contain-background">
+		<div class="row justify-content-md-center">
+			<div class="col">
+				<h1>Jeu {{ name }}</h1>
+			</div>
+		</div>
+		<div class="row justify-content-md-center">
+			<div class="col-">
+				Cartes défaussées joueurs adverses
+			</div>
+		</div>
+		<div class="row justify-content-md-center">
+			<div class="col-">
+				Cartes joueurs
+			</div>
+		</div>
+		<div class="row justify-content-md-center">
+			<div class="col">
+				Pioche
+			</div>
+			<div class="col-">
+				Main persistante
+			</div>
+			<div class="col">
+				Carte à défausser
+			</div>
+		</div>
+
+	</div>
+{% endblock %}
+
+{% block javascript %}
+	<script content="javascript">
+		var actualisationInterval = 2000;
+		var intervals = [];
+
+		function refreshTimeConnect() {
+			$.getJSON("{{ base_url('Game_c/refreshTimeConnect') }}", function (result) {
+				console.log("retour:" + result);
+				if (!result) {
+					alert('Une erreur est survenue');
+					clearAllInterval();
+				}
+			});
+			console.log("actualisation");
+
+			$.getJSON("{{ base_url('Game_c/getNbJoueurs') }}", function (result) {
+				console.log("retour:" + result);
+				if (!result) {
+					alert('Une erreur est survenue');
+					clearAllInterval();
+				}
+			});
+		}
+
+		function
+
+		function clearAllInterval() {
+			intervals.forEach(function(interval){
+				clearInterval(interval);
+			});
+		}
+
+		$(document).ready(function () {
+			intervals[0] = window.setInterval(refreshTimeConnect, actualisationInterval);
+		});
+	</script>
+{% endblock %}

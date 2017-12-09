@@ -45,20 +45,36 @@
 					<li class="nav-item">
 						{{ anchor('Users_c/getScore', 'Scores', {'class' : 'nav-link', 'title' : 'Scores'}) }}
 					</li>
-					<li class="nav-item">
-                        {{ anchor('Game_c/commencer', 'Jeu', {'class' : 'nav-link', 'title' : 'Jeu'}) }}
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							Jouer
+						</a>
+						<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+							{{ anchor('Game_c/creerPartie', 'Créer une partie', {'class' : 'dropdown-item', 'title' : 'Créer une partie'}) }}
+							{{ anchor('Game_c/rejoindrePartie', 'Rejoindre une partie', {'class' : 'dropdown-item', 'title' : 'Rejoindre une partie'}) }}
+							<div class="dropdown-divider"></div>
+							{{ anchor('Game_c/rejoindrePartie', 'Parties en cours', {'class' : 'dropdown-item', 'title' : 'Parties en cours'}) }}
+
+						</div>
 					</li>
 				</ul>
 				<ul class="navbar-nav mt-2 mt-lg-0">
 					<li class="nav-item">
 						{{ anchor('', 'Aide', {'class' : 'nav-link', 'title' : 'Aide'}) }}
 					</li>
-					<li class="nav-item">
-						{{ anchor('Users_c/inscription', 'Inscription', {'class' : 'nav-link', 'title' : 'Inscription'}) }}
-					</li>
-					<li class="nav-item">
-						{{ anchor('Users_c/connexion', 'Connexion', {'class' : 'nav-link', 'title' : 'Connexion'}) }}
-					</li>
+					{% if globlogin is empty %}
+						<li class="nav-item">
+							{{ anchor('Users_c/inscription', 'Inscription', {'class' : 'nav-link', 'title' : 'Inscription'}) }}
+						</li>
+						<li class="nav-item">
+							{{ anchor('Users_c/connexion', 'Connexion', {'class' : 'nav-link', 'title' : 'Connexion'}) }}
+						</li>
+					{% else %}
+						<li class="nav-item">
+							{{ anchor('Users_c/deconnexion', 'Déconnexion ['~globlogin~']', {'class' : 'nav-link', 'title' : 'Déconnexion'}) }}
+						</li>
+					{% endif %}
 				</ul>
 				{#<form class="form-inline my-2 my-lg-0">
 					<input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
@@ -74,8 +90,10 @@
 			<li>{{ anchor('Users_c/getScore', 'Scores', {'title' : 'Scores'}) }}</li>
 			<li>{{ anchor('', 'Aide', {'title' : 'Aide'}) }}</li>
 			<li>{{ anchor('Game_c/commencer', 'Jeu', {'title' : 'Jeu'}) }}</li>
-			<li>{{ anchor('Users_c/inscription', 'Inscription', {'title' : 'Inscription'}) }}</li>
-			<li>{{ anchor('Users_c/connexion', 'Connexion', {'title' : 'Connexion'}) }}</li>
+			{% if globlogin is empty %}
+				<li>{{ anchor('Users_c/inscription', 'Inscription', {'title' : 'Inscription'}) }}</li>
+				<li>{{ anchor('Users_c/connexion', 'Connexion', {'title' : 'Connexion'}) }}</li>
+			{% endif %}
 		</ul>
 	</nav>
 {% endif %}

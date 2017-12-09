@@ -9,8 +9,10 @@ class Welcome extends CI_Controller {
 		parent::__construct();
 		$this->load->database();
 		$this->load->helper('url');
-		$this->load->library('Twig');
+		$this->load->library(array('session', 'Twig'));
 		$this->load->model('Welcome_m');
+		$this->twig->addGlobal('globlogin', $this->session->userdata('login'));
+
 	}
 
 

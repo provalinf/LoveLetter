@@ -1,0 +1,37 @@
+{% extends "layout.twig" %}
+{% block contenu %}
+
+	<div class="container contain-background">
+		<div class="row justify-content-md-center">
+			<div class="col">
+				<h1>Création d'une partie</h1>
+			</div>
+		</div>
+		<div class="row justify-content-md-center">
+			<div class="col">
+				{{ form_open('Game_c/validFormCreerPartie') }}
+				<div class="form-group">
+					<label for="name">Nom</label>
+					<input type="text" name="name" class="form-control" placeholder="Nom de la partie"
+						   value="{{ set_value('name') }}"/>
+					{{ form_error('name') }}
+				</div>
+
+				<div class="form-group">
+					<label for="nb_joueurs">Nombre de joueur</label>
+					<input type="number" min="2" max="4" name="nb_joueurs" class="form-control"
+						   placeholder="De 2 à 4 joueurs"
+						   value="{{ set_value('nb_joueurs') }}"/>
+					{{ form_error('nb_joueurs') }}
+				</div>
+				<input class="btn btn-primary" type="submit" value="Créer"/>
+				<input class="btn btn-secondary" type="reset" value="Réinitialiser">
+
+				{{ form_close() }}
+			</div>
+
+		</div>
+
+	</div>
+
+{% endblock %}
