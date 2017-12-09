@@ -74,15 +74,6 @@ class Users_c extends CI_Controller {
 		}
 	}
 
-    public function score()
-    {
-        $this->check_isConnected();
-        $listescore = $this->Users_m->getScore();
-        $this->twig->display('score', ['titre' => "Scores", 'liste_score' => $listescore]);
-    }
 
-    public function index(){
-        $this->twig->display('welcome', ['titre' => "Bienvenue"]);
-    }
 
 }

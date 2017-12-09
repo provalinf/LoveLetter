@@ -10,5 +10,13 @@ class Game_m extends CI_Model {
 		return $query->result_array();
 	}
 
+    public function getScore()
+    {
+        $this->db->select("*");
+        $this->db->from("score_manche");
+        $query = $this->db->get();
+
+        return $query->result_array();
+    }
 
 }

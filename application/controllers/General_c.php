@@ -1,16 +1,17 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Welcome extends CI_Controller {
+class General_c extends CI_Controller {
 	/**
-	 * Welcome constructor.
+	 * Generalc constructor.
 	 */
 	public function __construct() {
+
 		parent::__construct();
 		$this->load->database();
 		$this->load->helper('url');
 		$this->load->library('Twig');
-		$this->load->model('Welcome_m');
+		$this->load->model('General_m');
 	}
 
 
@@ -29,7 +30,11 @@ class Welcome extends CI_Controller {
 	 * map to /index.php/welcome/<method_name>
 	 * @see https://codeigniter.com/user_guide/general/urls.html
 	 */
-	public function index() {
+    public function index(){
         $this->twig->display('welcome', ['titre' => "Bienvenue"]);
-	}
+    }
+
+    public function aide(){
+        $this->twig->display('help', ['titre' => "Aide"]);
+    }
 }

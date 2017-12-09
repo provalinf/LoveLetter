@@ -54,4 +54,11 @@ class Game_c extends CI_Controller {
         redirect(base_url());
     }
 
+    public function score()
+    {
+        $this->check_isConnected();
+        $listescore = $this->Game_m->getScore();
+        $this->twig->display('score', ['titre' => "Scores", 'liste_score' => $listescore]);
+    }
+
 }

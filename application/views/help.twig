@@ -1,0 +1,110 @@
+{% extends "layout.twig" %}
+{% block contenu %}
+
+
+    <h1>Mise en place du jeu :</h1>
+<p>
+    La mise en place va dépendre du nombre de joueurs puisqu’elle est différente si vous jouez à 2.
+Dans tous les cas, mélangez les 16 cartes de jeu et formez une pioche face cachée.
+</p>
+
+<p>
+    Sans la regarder, écartez la première carte de la pile, elle ne servira pas lors de cette manche.
+A 2 joueurs, en plus de la carte face cachée, écartez également les 3 cartes suivantes mais face
+visible cette fois-ci (il y a donc 4 cartes qui ne serviront pas à 2 joueurs, 3 visibles et une cachée).
+Chaque joueur reçoit alors une carte, laquelle compose leur main. Puis le jeu débute et c’est le joueur
+qui été à un rendez-vous galant le plus récemment qui commence (ou sinon le plus jeune).
+</p>
+
+    <h1>Déroulement du jeu :</h1>
+<p>
+    Une partie de Love Letter se déroule en plusieurs manches, chacune d’elle représentant une journée.
+A la fin de chaque journée, la princesse reçoit une lettre de la part d’un des courtisans, lorsqu’un
+courtisan réussit à lui faire parvenir suffisamment de lettres (le nombre à atteindre dépend du nombre
+de joueurs autour de la table) il gagne son affection et remporte la partie.
+</p>
+
+<p>
+    Pour commencer, le joueur dont c’est le tour, pioche la première carte de la pile et l’ajoute à sa main.
+Le joueur choisit ensuite l’une des deux cartes qu’il a dans sa main et la défausse en la plaçant face
+visible devant lui et en appliquant son effet (qu’il soit positif ou négatif).
+</p>
+
+<p>
+    Les cartes défaussées restent devant les joueurs qui les ont placées, dans l’ordre dans lequel elles ont
+été défaussées. Une fois que l’effet a été appliqué, c’est au tour du joueur suivant dans le sens horaire
+(donc celui à gauche) de jouer.
+</p>
+
+<p>
+    Si un joueur est éliminé d’une manche suite à l’effet d’une carte, il défausse les cartes de sa main et ne
+jouera plus de tours pendant cette manche. Celle-ci se poursuit normalement pour les joueurs encore en lice.
+</p>
+
+<p>
+    Une manche se termine lorsqu’un des deux cas de figure suivants se présente :
+-Il ne reste plus qu’un seul joueur en lice.
+-Si la pioche est vide à la fin d’un tour, les joueurs qui sont toujours dans la manche dévoilent alors leur
+main. Le joueur avec la carte ayant la valeur la plus élevée remporte la manche. En cas d’égalité, c’est le
+joueur en lice qui a défaussé le plus grand total de valeur de cartes qui l’emporte.
+</p>
+
+<p>
+    Le joueur qui a remporté la manche, reçoit un marqueur d’affection. On remélange alors les 16 cartes ensemble
+et une nouvelle manche débute, en commençant par celui qui a remporté la précédente.
+</p>
+
+    <h1>Effets des cartes :</h1>
+<p>
+    -La Princesse : Si vous défaussez la Princesse pour quelque raison que ce soit, cette dernière
+jette votre lettre au feu et vous êtes immédiatement éliminé de la manche.
+</p>
+
+<p>
+    –La Comtesse : La Comtesse n’a aucun effet lorsqu’elle est défaussée, son effet fonctionne lorsqu’elle
+est en main. A savoir que si vous avez dans votre main le roi ou un prince en plus de la Comtesse,
+vous êtes obligés de défausser la Comtesse.
+</p>
+
+<p>
+    –Le Roi : Lorsque vous défaussez le Roi, échangez votre carte en main avec celle du joueur de votre choix.
+Il n’est pas possible d’échanger sa main avec un joueur éliminé ou un joueur protégé par la Servante.
+Si tous les autres joueurs sont protégés par une Servante, alors le Roi n’a aucun effet.
+</p>
+
+<p>
+    –Le Prince : En le défaussant, désignez un joueur qui doit défausser sa main sans appliquer l’effet de sa
+carte (seul l’effet de la Princesse est appliqué) et piocher une nouvelle carte à la place. Si jamais la
+pioche est vide, le joueur prend la carte qui a été mise de côté face cachée au début de la manche. Si
+tous les joueurs sont protégés par une Servante, vous devez vous auto-désigner.
+</p>
+<p>
+    -La Servante : Vous êtes protégés des effets des cartes des autres joueurs jusqu’au début de votre prochain
+tour.
+</p>
+
+<p>
+    -Le Baron : Comparez secrètement votre main avec celle d’un autre joueur toujours en lice, le joueur avec
+la carte la plus faible est éliminé de la manche. En cas d’égalité, il ne se passe rien. Si tout le monde
+est protégé par une Servante, le Baron n’a aucun effet.
+</p>
+
+<p>
+    -Le Prêtre : Regardez la main d’un autre joueur secrètement. Si tous les autres joueurs sont protégés par
+une Servante, alors le Prêtre n’a aucun effet.
+</p>
+
+<p>
+    -La Garde : Désignez un autre joueur et nommez une carte (vous ne pouvez pas choisir la Garde), si le joueur
+possède cette carte dans sa main, il est éliminé de la manche. S’il ne l’a pas, rien ne se passe, il en va
+de même si tous les joueurs sont protégés par une Servante.
+</p>
+
+    <h1>Fin de la partie :</h1>
+<p>
+    La partie s’achève dès qu’un joueur a remporté suffisamment de manches pour gagner. Pour une partie à deux
+joueurs, il faut remporter 7 manches. A 3 joueurs il faut en remporter 5 et à 4 joueurs il en faut 4.
+</p>
+
+
+{% endblock %}
