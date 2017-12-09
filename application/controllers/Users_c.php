@@ -11,7 +11,6 @@ class Users_c extends CI_Controller {
 		$this->load->model('Users_m');
 		$this->twig->addGlobal('globlogin', $this->session->userdata('login'));
 	}
-
 	private function check_isConnected() {
 		if (!empty($this->session->userdata('login'))) redirect(base_url());
 	}
@@ -75,5 +74,7 @@ class Users_c extends CI_Controller {
 			redirect(base_url());
 		}
 	}
+
+
 
 }

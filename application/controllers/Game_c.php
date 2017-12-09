@@ -63,4 +63,11 @@ class Game_c extends CI_Controller {
 	public function refreshTimeConnect() {
 		echo json_encode($this->Game_m->refreshActualisationConnexionJoueur($this->session->userdata()['login'], $this->session->userdata()['id_partie']));
 	}
+
+	public function score()
+	{
+		$this->check_isConnected();
+		$listescore = $this->Game_m->getScore();
+		$this->twig->display('score', ['titre' => "Scores", 'liste_score' => $listescore]);
+	}
 }
