@@ -150,7 +150,12 @@ class Game_m extends CI_Model {
         $this->db->limit(1);
         $id_carte = $this->db->get();
 
-		$this->db->insert("main", ['login' => $id_joueur, 'carte' => $id_carte, 'manche' => $this->getCurrentManche($id_partie)]);
+        $this->db->insert("main", ['login' => $id_joueur, 'carte' => $id_carte, 'manche' => $this->getCurrentManche($id_partie)]);
+
+        $this->db->delete("est_disponible");
+        $this->db->where("id_dispo", $id_pioche);
+        $this->db->where("num_manche", $this->getCurrentManche($id_partie));
+        $this->db->where("id_carte", $id_carte);
 	}
 
 	private function piocheOk($id_pioche) {
@@ -220,14 +225,14 @@ class Game_m extends CI_Model {
 		return $query->row()->login;
 	}
 
-	public function getWinner($id_partie) {
+/*	public function getWinner($id_partie) {
 
 		$this->db->from()
 	}
 
 	public function InitPioche($id_partie, $num_init_manche) {
 		$this->db->from()
-	}
+	}*/
 
 
 }
