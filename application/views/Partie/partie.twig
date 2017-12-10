@@ -56,16 +56,48 @@
 			});
 		}
 
-		function
-
 		function clearAllInterval() {
 			intervals.forEach(function(interval){
 				clearInterval(interval);
 			});
 		}
+		
+		function action() {
+            switch ($id_carte){
+                case 1:
+                    //Garde
+
+                    break;
+                case 2:
+                    //Pretre
+                    break;
+                case 3:
+                    //Baron
+                    break;
+                case 4:
+                    //Servante
+                    break;
+                case 5:
+                    //Prince
+                    break;
+                case 6:
+                    //Roi
+                    break;
+                case 7:
+                    //Comtesse
+                    break;
+                case 8:
+                    //Princesse
+
+                    break;
+                default:
+                    console.log("Carte inexistante");
+            }
+        }
 
 		$(document).ready(function () {
 			intervals[0] = window.setInterval(refreshTimeConnect, actualisationInterval);
-		});
+		}
+		);
 	</script>
 {% endblock %}
