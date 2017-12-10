@@ -137,6 +137,6 @@ class Game_c extends CI_Controller {
 
 	public function piocher($id_joueur, $id_pioche) {
 		$this->check_isConnected();
-		echo json_encode($this->Game_m->pioche($id_joueur, $id_pioche));
+		echo json_encode($this->Game_m->pioche($id_joueur, $id_pioche, $this->session->userdata('id_partie')));
 	}
 }

@@ -141,22 +141,21 @@ class Game_m extends CI_Model {
 
 	}
 
-	public function pioche($id_joueur) {
-		$this->db->select("id_carte");
-		$this->db->from("Pioche");
-		$this->db->order_by("rand()");
-		$this->db->limit(1);
-		$query = $this->db->get();
-		return $query->row_array()['id_carte'];
-
-
+	public function pioche($id_joueur, $id_pioche, $id_partie) {
 		if (!$this->piocheOk($id_pioche)) return false;
-		return $this->db->insert("main", ['login' => $id_joueur, 'login' => $id_partie]);
+
+        $this->db->select("id_carte");
+        $this->db->from("est_disponible");
+        $this->db->order_by("rand()");
+        $this->db->limit(1);
+        $id_carte = $this->db->get();
+
+		$this->db->insert("main", ['login' => $id_joueur, 'carte' => $id_carte, 'manche' => $this->getCurrentManche($id_partie)]);
 	}
 
 	private function piocheOk($id_pioche) {
-		$this->db->from("Pioche");
-		$this->db->where('id_pioche', $id_pioche);
+		$this->db->from("est_disponible");
+		$this->db->where('id_dispo', $id_pioche);
 		$query = $this->db->get();
 		return $query->num_rows() != 0;
 	}
