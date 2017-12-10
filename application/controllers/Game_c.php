@@ -79,7 +79,7 @@ class Game_c extends CI_Controller {
 
 		$nb_manche = $this->Game_m->getNbManches($id_partie);
 		if ($nb_manche != 0) {
-			$num_current_manche = $this->Game_m->getLastManche($id_partie);
+			$num_current_manche = $this->Game_m->getCurrentManche($id_partie);
 		}
 
 		if ($this->Game_m->check_isFirstMasterPlayer($id_partie, $id_joueur)) {
@@ -87,27 +87,26 @@ class Game_c extends CI_Controller {
 				$joueurs = $this->Game_m->getJoueursPartie($id_partie);
 
 				if ($this->Game_m->MancheIsFinished($num_current_manche)) {
-					$this->Game_m->defineScoresJoueurs();
+					$this->Game_m->defineScoresJoueurs($joueurs, $num_current_manche);
 				}
 
 				if ($nb_manche < $nb_manche_par_joueurs[$nb_manche]) {
-					$num_manche = $this->Game_m->initManche([
+					$num_init_manche = $this->Game_m->initManche([
 						'num_manche' => $nb_manche + 1, 'id_partie' => $id_partie
 					]);
-					$this->Game_m->InitPioche($id_partie, $num_manche);
-					$this->Game_m->InitMainJoueurs($num_manche);
+					$this->Game_m->InitPioche($id_partie, $num_init_manche);
+					$this->Game_m->InitMainJoueurs($num_init_manche);
 
-					if ($num_manche == 1) {
+					if ($num_init_manche == 1) {
 						$this->Game_m->defineJoueurSuivant($joueurs[0]['login'], $id_partie);
 					} else {
 						$joueur_suivant = $this->Game_m->getPrevWinnerManche();
 						$this->Game_m->defineJoueurSuivant($joueur_suivant, $id_partie);
 					}
+					$num_current_manche = $num_init_manche;    // Facultatif
 				} else {
 					$this->Game_m->definePartieFinished($id_partie);
 				}
-			} else {
-
 			}
 		}
 
@@ -131,13 +130,13 @@ class Game_c extends CI_Controller {
 		$this->twig->display('score', ['titre' => "Scores", 'liste_score' => $this->Game_m->getScore()]);
 	}
 
-	public function defausser($id_carte, $id_joueur){
-        $this->check_isConnected();
-        echo json_encode($this->Game_m->defausse($id_carte, $id_joueur, $this->session->userdata('id_partie')));
-    }
+	public function defausser($id_carte, $id_joueur) {
+		$this->check_isConnected();
+		echo json_encode($this->Game_m->defausse($id_carte, $id_joueur, $this->session->userdata('id_partie')));
+	}
 
-    public function piocher($id_joueur, $id_pioche){
-        $this->check_isConnected();
-        echo json_encode($this->Game_m->pioche($id_joueur, $id_pioche));
-    }
+	public function piocher($id_joueur, $id_pioche) {
+		$this->check_isConnected();
+		echo json_encode($this->Game_m->pioche($id_joueur, $id_pioche));
+	}
 }

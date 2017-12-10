@@ -10,22 +10,19 @@ class Game_m extends CI_Model {
 		return $query->result_array();
 	}
 
-	public function getMancheEnCours($id_partie){
-        $this->db->select("num_manche");
-        $this->db->from("manche");
-        $this->db->where("id_partie", $id_partie);
-        $this->db->order_by("num_manche", "DESC");
-        $this->db->limit(1);
-        $query = $this->db->get();
-        return $query->result_array();
-    }
+	public function getCurrentManche($id_partie) {
+		$this->db->select("num_manche");
+		$this->db->from("manche");
+		$this->db->where("id_partie", $id_partie);
+		$this->db->order_by("num_manche", "DESC");
+		$this->db->limit(1);
+		$query = $this->db->get();
+		return $query->row()->num_manche;
+	}
 
-	public function getScore()
-	{
-		$this->db->select("*");
+	public function getScore() {
 		$this->db->from("score_manche");
 		$query = $this->db->get();
-
 		return $query->result_array();
 	}
 
@@ -38,7 +35,8 @@ class Game_m extends CI_Model {
 
 	public function initManche($donnees) {
 		$result = $this->db->insert("Manche", $donnees);
-		return ($result) ? /*$this->db->insert_id()*/$donnees['num_manche'] : false;
+		return ($result) ? /*$this->db->insert_id()*/
+			$donnees['num_manche'] : false;
 	}
 
 	public function getMainJoueur($id_joueur, $manche) {
@@ -98,39 +96,116 @@ class Game_m extends CI_Model {
 		$this->db->from("Joueur");
 		$this->db->where("id_partie", $id_partie);
 		$this->db->where("", $id_partie);
+		// Non fini
 	}
 
-    public function defausse($id_carte, $id_joueur, $id_partie)
-    {
-        $this->db->delete("main");
-        $this->db->where("id_carte", $id_carte);
-        $this->db->where("login", $id_joueur);
-        $this->db->where("num_manche", $this->getMancheEnCours($id_partie));
+	public function PartieIsFinished($id_partie) {
+		$this->db->from("Partie");
+		$this->db->where('id_partie', $id_partie);
+		$this->db->where('finie', true);
+		$query = $this->db->get();
+		return $query->num_rows() != 0;
+	}
 
-        return $this->db->insert("defausse", ['login' => $id_joueur, 'id_manche' => $this->getMancheEnCours($id_partie), 'id_partie' => $id_partie, 'id_carte' => $id_carte]);
+	public function AllPlayersConnected($id_partie) {
+		$joueurs = $this->getJoueursPartie($id_partie);
+		$this->db->select("nb_joueurs, CURRENT_TIMESTAMP");
+		$this->db->from("Partie");
+		$query = $this->db->get();
+		if (count($joueurs) != $query->row()->nb_joueurs) return false;
 
-    }
+		$this->db->from("Joueur");
+		$this->db->where("temps_actualisation <= DATE_ADD(NOW(), INTERVAL 15 SECOND");
+		$query2 = $this->db->get();
+		return $query2->num_rows() == $query->row()->nb_joueurs;
+	}
 
-    public function pioche($id_joueur)
-    {
-        $this->db->select("id_carte");
-        $this->db->from("pioche");
-        $this->db->order_by("rand()");
-        $this->db->limit(1);
-        $query = $this->db->get();
-        return $query->row_array()['id_carte'];
+	public function getNbManches($id_partie) {
+		$this->db->from("Manche");
+		$this->db->where("id_partie", $id_partie);
+		$query = $this->db->get();
+		return $query->num_rows();
+	}
+
+	public function defausse($id_carte, $id_joueur, $id_partie) {
+		$this->db->delete("main");
+		$this->db->where("id_carte", $id_carte);
+		$this->db->where("login", $id_joueur);
+		$this->db->where("num_manche", $this->getCurrentManche($id_partie));
+
+		$donnees = [
+			'login'    => $id_joueur, 'num_manche' => $this->getCurrentManche($id_partie), 'id_partie' => $id_partie,
+			'id_carte' => $id_carte
+		];
+		return $this->db->insert("defausse", $donnees);
+
+	}
+
+	public function pioche($id_joueur) {
+		$this->db->select("id_carte");
+		$this->db->from("Pioche");
+		$this->db->order_by("rand()");
+		$this->db->limit(1);
+		$query = $this->db->get();
+		return $query->row_array()['id_carte'];
 
 
-        if (!$this->piocheOk($id_pioche)) return false;
-        return $this->db->insert("main", ['login' => $id_joueur, 'login' => $id_partie]);
-    }
+		if (!$this->piocheOk($id_pioche)) return false;
+		return $this->db->insert("main", ['login' => $id_joueur, 'login' => $id_partie]);
+	}
 
-    private function piocheOk($id_pioche)
-    {
-        $this->db->from("pioche");
-        $this->db->where('id_pioche', $id_pioche);
-        $query = $this->db->get();
-        return $query->num_rows() != 0;
-    }
+	private function piocheOk($id_pioche) {
+		$this->db->from("Pioche");
+		$this->db->where('id_pioche', $id_pioche);
+		$query = $this->db->get();
+		return $query->num_rows() != 0;
+	}
+
+	public function check_isFirstMasterPlayer($id_partie, $id_joueur) {
+		$this->db->from("Joueur");
+		$this->db->where("id_partie", $id_partie);
+		$this->db->order_by("login", "ASC");
+		$this->db->limit(1);
+		$query = $this->db->get();
+		return $query->row()->login == $id_joueur;
+	}
+
+	public function MancheIsFinished($id_partie, $id_manche) {
+		$this->db->from("Est_disponible");
+		$this->db->where("num_manche", $id_manche);
+		$query = $this->db->get();
+
+		$joueurs = $this->getJoueursPartie($id_partie);
+		$this->db->from("Main as m");
+		$this->db->join("Joueur as j", "j.login=m.login");
+		$this->db->where("j.id_partie", $id_partie);
+		$this->db->where("m.num_manche", $id_manche);
+		$query2 = $this->db->get();
+
+		$this->db->from("Joueur");
+		$this->db->where("id_partie", $id_partie);
+		$this->db->where("joue", true);
+		$query3 = $this->db->get();
+
+		return $query3->num_rows() == 0 && ($query->num_rows() == 0 || $query2->num_rows() == 1);
+	}
+
+	public function defineScoresJoueurs($joueurs, $num_current_manche) {
+		foreach ($joueurs as $joueur) {
+			$this->db->select("c.valeur");
+			$this->db->from("Main as m");
+			$this->db->join("Carte as c", "c.id_carte=m.id_carte");
+			$this->db->where("m.num_manche", $num_current_manche);
+			$this->db->where("m.login", $joueur['login']);
+			$query = $this->db->get();
+
+			if ($query->num_rows() != 0) $score = $query->row_array()["c.valeur"]; else $score = 0;
+
+			$this->db->insert("Score_manche", [
+				'login' => $joueur['login'], 'num_manche' => $num_current_manche, 'score' => $score
+			]);
+		}
+	}
+
 
 }
