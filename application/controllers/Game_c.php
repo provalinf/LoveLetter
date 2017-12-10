@@ -130,4 +130,14 @@ class Game_c extends CI_Controller {
 	public function score() {
 		$this->twig->display('score', ['titre' => "Scores", 'liste_score' => $this->Game_m->getScore()]);
 	}
+
+	public function defausser($id_carte, $id_joueur){
+        $this->check_isConnected();
+        echo json_encode($this->Game_m->defausse($id_carte, $id_joueur, $this->session->userdata('id_partie')));
+    }
+
+    public function piocher($id_joueur, $id_pioche){
+        $this->check_isConnected();
+        echo json_encode($this->Game_m->pioche($id_joueur, $id_pioche));
+    }
 }

@@ -10,7 +10,19 @@ class Game_m extends CI_Model {
 		return $query->result_array();
 	}
 
-	public function getScore() {
+	public function getMancheEnCours($id_partie){
+        $this->db->select("num_manche");
+        $this->db->from("manche");
+        $this->db->where("id_partie", $id_partie);
+        $this->db->order_by("num_manche", "DESC");
+        $this->db->limit(1);
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
+	public function getScore()
+	{
+		$this->db->select("*");
 		$this->db->from("score_manche");
 		$query = $this->db->get();
 
@@ -87,5 +99,38 @@ class Game_m extends CI_Model {
 		$this->db->where("id_partie", $id_partie);
 		$this->db->where("", $id_partie);
 	}
+
+    public function defausse($id_carte, $id_joueur, $id_partie)
+    {
+        $this->db->delete("main");
+        $this->db->where("id_carte", $id_carte);
+        $this->db->where("login", $id_joueur);
+        $this->db->where("num_manche", $this->getMancheEnCours($id_partie));
+
+        return $this->db->insert("defausse", ['login' => $id_joueur, 'id_manche' => $this->getMancheEnCours($id_partie), 'id_partie' => $id_partie, 'id_carte' => $id_carte]);
+
+    }
+
+    public function pioche($id_joueur)
+    {
+        $this->db->select("id_carte");
+        $this->db->from("pioche");
+        $this->db->order_by("rand()");
+        $this->db->limit(1);
+        $query = $this->db->get();
+        return $query->row_array()['id_carte'];
+
+
+        if (!$this->piocheOk($id_pioche)) return false;
+        return $this->db->insert("main", ['login' => $id_joueur, 'login' => $id_partie]);
+    }
+
+    private function piocheOk($id_pioche)
+    {
+        $this->db->from("pioche");
+        $this->db->where('id_pioche', $id_pioche);
+        $query = $this->db->get();
+        return $query->num_rows() != 0;
+    }
 
 }
