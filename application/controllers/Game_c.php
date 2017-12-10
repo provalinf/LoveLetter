@@ -60,14 +60,74 @@ class Game_c extends CI_Controller {
 		$this->twig->display('Partie/partie', ['titre' => "Partie \"$nom_partie\" en cours ", 'name' => $nom_partie]);
 	}
 
-	public function refreshTimeConnect() {
-		echo json_encode($this->Game_m->refreshActualisationConnexionJoueur($this->session->userdata()['login'], $this->session->userdata()['id_partie']));
+	public function play() {
+		$this->check_isPartieSelected();
+		$id_joueur = $this->session->userdata('login');
+		$id_partie = $this->session->userdata('id_partie');
+
+		$nb_manche_par_joueurs = array(2 => 7, 3 => 5, 4 => 4);
+
+		if ($this->Game_m->PartieIsFinished($id_partie)) {
+			echo json_encode("Partie terminée. Le gagnant est {$this->Game_m->getWinner($id_partie)}");
+			return;
+		}
+
+		if (!$this->Game_m->AllPlayersConnected($id_partie)) {
+			echo json_encode("En attente de joueur");
+			return;
+		}
+
+		$nb_manche = $this->Game_m->getNbManches($id_partie);
+		if ($nb_manche != 0) {
+			$num_current_manche = $this->Game_m->getLastManche($id_partie);
+		}
+
+		if ($this->Game_m->check_isFirstMasterPlayer($id_partie, $id_joueur)) {
+			if ($nb_manche == 0 || $this->Game_m->MancheIsFinished($num_current_manche)) {
+				$joueurs = $this->Game_m->getJoueursPartie($id_partie);
+
+				if ($this->Game_m->MancheIsFinished($num_current_manche)) {
+					$this->Game_m->defineScoresJoueurs();
+				}
+
+				if ($nb_manche < $nb_manche_par_joueurs[$nb_manche]) {
+					$num_manche = $this->Game_m->initManche([
+						'num_manche' => $nb_manche + 1, 'id_partie' => $id_partie
+					]);
+					$this->Game_m->InitPioche($id_partie, $num_manche);
+					$this->Game_m->InitMainJoueurs($num_manche);
+
+					if ($num_manche == 1) {
+						$this->Game_m->defineJoueurSuivant($joueurs[0]['login'], $id_partie);
+					} else {
+						$joueur_suivant = $this->Game_m->getPrevWinnerManche();
+						$this->Game_m->defineJoueurSuivant($joueur_suivant, $id_partie);
+					}
+				} else {
+					$this->Game_m->definePartieFinished($id_partie);
+				}
+			} else {
+
+			}
+		}
+
+		if (empty($num_current_manche)) {
+			echo json_encode("En attente d'une nouvelle manche");
+			return;
+		}
+
+		if ($this->Game_m->MancheIsFinished($num_current_manche)) {
+			echo json_encode("Manche terminée");
+			return;
+		}
+
 	}
 
-	public function score()
-	{
-		$this->check_isConnected();
-		$listescore = $this->Game_m->getScore();
-		$this->twig->display('score', ['titre' => "Scores", 'liste_score' => $listescore]);
+	public function refreshTimeConnect() {
+		echo json_encode($this->Game_m->refreshActualisationConnexionJoueur($this->session->userdata('login'), $this->session->userdata('id_partie')));
+	}
+
+	public function score() {
+		$this->twig->display('score', ['titre' => "Scores", 'liste_score' => $this->Game_m->getScore()]);
 	}
 }

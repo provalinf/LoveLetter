@@ -10,9 +10,7 @@ class Game_m extends CI_Model {
 		return $query->result_array();
 	}
 
-	public function getScore()
-	{
-		$this->db->select("*");
+	public function getScore() {
 		$this->db->from("score_manche");
 		$query = $this->db->get();
 
@@ -28,7 +26,7 @@ class Game_m extends CI_Model {
 
 	public function initManche($donnees) {
 		$result = $this->db->insert("Manche", $donnees);
-		return ($result) ? $this->db->insert_id() : false;
+		return ($result) ? /*$this->db->insert_id()*/$donnees['num_manche'] : false;
 	}
 
 	public function getMainJoueur($id_joueur, $manche) {
@@ -75,9 +73,19 @@ class Game_m extends CI_Model {
 		return $query->row_array()['nom_partie'];
 	}
 
+	public function AllMainIsEmpty($id_partie, $id_manche) {
+		$this->db->from("Main");
+		$this->db->where("id_partie", $id_partie);
+		$this->db->where("num_manche", $id_manche);
+		$query = $this->db->get();
+		return $query->num_rows() == 0;
+	}
+
 
 	public function getWhatPlay($id_partie) {
-
+		$this->db->from("Joueur");
+		$this->db->where("id_partie", $id_partie);
+		$this->db->where("", $id_partie);
 	}
 
 }
