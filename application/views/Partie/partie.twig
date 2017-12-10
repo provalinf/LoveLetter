@@ -57,47 +57,77 @@
 		}
 
 		function clearAllInterval() {
-			intervals.forEach(function(interval){
+			intervals.forEach(function (interval) {
 				clearInterval(interval);
 			});
 		}
-		
-		function action() {
-            switch ($id_carte){
-                case 1:
-                    //Garde
 
-                    break;
-                case 2:
-                    //Pretre
-                    break;
-                case 3:
-                    //Baron
-                    break;
-                case 4:
-                    //Servante
-                    break;
-                case 5:
-                    //Prince
-                    break;
-                case 6:
-                    //Roi
-                    break;
-                case 7:
-                    //Comtesse
-                    break;
-                case 8:
-                    //Princesse
+		function action(id_carte) {
+			switch (id_carte) {
+				case 1:
+					//Garde
 
-                    break;
-                default:
-                    console.log("Carte inexistante");
-            }
-        }
+					break;
+				case 2:
+					//Pretre
+					break;
+				case 3:
+					//Baron
+					$.getJSON("{{ base_url('Game_c/getJoueurs/3') }}", function (result) {
+						if (!result) {
+							var tab = JSON.parse(result);
+							var joueur_selected = xx; // popup qui propose les joueurs
+							if (/*popup réponse */) {
+								/*$.ajax({
+									url: "{{ base_url('Game_c/joueurCompare') }}",
+									type: 'POST',
+									contentType: "application/json",
+									dataType: 'json',
+									data: JSON.stringify(joueur_selected),
+									success: function(msg) {
+										alert(msg);
+										un tableau JSON qui contient les cartes du joueur
+										var cartes_adversaire = JSON.parse(msg);
+										console.log(cartes_adversaire);
+									}
+								});*/
+
+								/*$.getJSON("{{ base_url('Game_c/joueurCompare/idjoueur') }}", function (res) {
+									if (result) {
+										alert(msg);
+										un tableau JSON qui contient les cartes du joueur
+										var cartes_adversaire = JSON.parse(msg);
+										console.log(cartes_adversaire);
+									}
+								});*/
+							}
+						}
+					});
+					break;
+				case 4:
+					//Servante
+					break;
+				case 5:
+					//Prince
+					break;
+				case 6:
+					//Roi
+					break;
+				case 7:
+					//Comtesse
+					break;
+				case 8:
+					//Princesse
+
+					break;
+				default:
+					console.log("Carte inexistante");
+			}
+		}
 
 		$(document).ready(function () {
-			intervals[0] = window.setInterval(refreshTimeConnect, actualisationInterval);
-		}
+				intervals[0] = window.setInterval(refreshTimeConnect, actualisationInterval);
+			}
 		);
 	</script>
 {% endblock %}

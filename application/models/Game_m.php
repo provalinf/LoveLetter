@@ -12,7 +12,7 @@ class Game_m extends CI_Model {
 
 	public function getCurrentManche($id_partie) {
 		$this->db->select("num_manche");
-		$this->db->from("manche");
+		$this->db->from("Manche");
 		$this->db->where("id_partie", $id_partie);
 		$this->db->order_by("num_manche", "DESC");
 		$this->db->limit(1);
@@ -21,7 +21,7 @@ class Game_m extends CI_Model {
 	}
 
 	public function getScore() {
-		$this->db->from("score_manche");
+		$this->db->from("Score_manche");
 		$query = $this->db->get();
 		return $query->result_array();
 	}
@@ -204,6 +204,29 @@ class Game_m extends CI_Model {
 				'login' => $joueur['login'], 'num_manche' => $num_current_manche, 'score' => $score
 			]);
 		}
+	}
+
+	public function definePartieFinished($id_partie) {
+		$this->db->where("id_partie", $id_partie);
+		return $this->db->update("Partie", ['finie' => true]);
+	}
+
+	public function getIdWinnerManche($num_manche) {
+		$this->db->from("Score_manche");
+		$this->db->where("num_manche", $num_manche);
+		$this->db->order_by("score", 'DESC');
+		$this->db->limit(1);
+		$query = $this->db->get();
+		return $query->row()->login;
+	}
+
+	public function getWinner($id_partie) {
+
+		$this->db->from()
+	}
+
+	public function InitPioche($id_partie, $num_init_manche) {
+		$this->db->from()
 	}
 
 

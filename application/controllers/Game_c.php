@@ -60,6 +60,19 @@ class Game_c extends CI_Controller {
 		$this->twig->display('Partie/partie', ['titre' => "Partie \"$nom_partie\" en cours ", 'name' => $nom_partie]);
 	}
 
+	public function joueurCompare($id_adversaire) {
+		/* ... */
+		$cartes_adversaire = array();
+		echo json_encode($cartes_adversaire);
+	}
+
+	public function joueurCompare2() {
+		/* ... */
+		$id_adversaire     = json_decode(stripslashes(file_get_contents("php://input")));
+		$cartes_adversaire = array();
+		echo json_encode($cartes_adversaire);
+	}
+
 	public function play() {
 		$this->check_isPartieSelected();
 		$id_joueur = $this->session->userdata('login');
@@ -83,10 +96,10 @@ class Game_c extends CI_Controller {
 		}
 
 		if ($this->Game_m->check_isFirstMasterPlayer($id_partie, $id_joueur)) {
-			if ($nb_manche == 0 || $this->Game_m->MancheIsFinished($num_current_manche)) {
+			if ($nb_manche == 0 || $this->Game_m->MancheIsFinished($id_partie, $num_current_manche)) {
 				$joueurs = $this->Game_m->getJoueursPartie($id_partie);
 
-				if ($this->Game_m->MancheIsFinished($num_current_manche)) {
+				if ($this->Game_m->MancheIsFinished($id_partie, $num_current_manche)) {
 					$this->Game_m->defineScoresJoueurs($joueurs, $num_current_manche);
 				}
 
@@ -100,7 +113,7 @@ class Game_c extends CI_Controller {
 					if ($num_init_manche == 1) {
 						$this->Game_m->defineJoueurSuivant($joueurs[0]['login'], $id_partie);
 					} else {
-						$joueur_suivant = $this->Game_m->getPrevWinnerManche();
+						$joueur_suivant = $this->Game_m->getIdWinnerManche($nb_manche);
 						$this->Game_m->defineJoueurSuivant($joueur_suivant, $id_partie);
 					}
 					$num_current_manche = $num_init_manche;    // Facultatif
@@ -115,7 +128,7 @@ class Game_c extends CI_Controller {
 			return;
 		}
 
-		if ($this->Game_m->MancheIsFinished($num_current_manche)) {
+		if ($this->Game_m->MancheIsFinished($id_partie, $num_current_manche)) {
 			echo json_encode("Manche terminée");
 			return;
 		}
@@ -140,36 +153,36 @@ class Game_c extends CI_Controller {
 		echo json_encode($this->Game_m->pioche($id_joueur, $id_pioche, $this->session->userdata('id_partie')));
 	}
 
-	public function action($id_carte){
-	    switch ($id_carte){
-            case 1:
-                //Garde
+	public function action($id_carte) {
+		switch ($id_carte) {
+			case 1:
+				//Garde
 
-                break;
-            case 2:
-                //Pretre
-                break;
-            case 3:
-                //Baron
-                break;
-            case 4:
-                //Servante
-                break;
-            case 5:
-                //Prince
-                break;
-            case 6:
-                //Roi
-                break;
-            case 7:
-                //Comtesse
-                break;
-            case 8:
-                //Princesse
+				break;
+			case 2:
+				//Pretre
+				break;
+			case 3:
+				//Baron
+				break;
+			case 4:
+				//Servante
+				break;
+			case 5:
+				//Prince
+				break;
+			case 6:
+				//Roi
+				break;
+			case 7:
+				//Comtesse
+				break;
+			case 8:
+				//Princesse
 
-                break;
-            default:
-                echo "Carte inexistante";
-        }
-    }
+				break;
+			default:
+				echo "Carte inexistante";
+		}
+	}
 }
