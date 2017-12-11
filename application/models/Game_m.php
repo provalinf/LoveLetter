@@ -258,5 +258,33 @@ class Game_m extends CI_Model {
 
 	}*/
 
+	public function getAdvers($id_partie, $id_joueur)
+	{
+		$this->db->select("id_joueur");
+		$this->db->from("joueur");
+		$this->db->where("id_partie", $id_partie);
+		$this->db->where("joue", true);
+		$this->db->where_not_in("login", $id_joueur);
+		$query = $this->db->get();
+		return $query->result_array();
+	}
+
+	public function getCartesSansG()
+	{
+		$this->db->select("image");
+		$this->db->from("carte");
+		$this->db->where_not_in("id_carte", 1);
+		$query = $this->db->get();
+		return $query->result_array();
+	}
+
+	public function voirMain_m($id_joueur)
+	{
+		$this->db->select("image");
+		$this->db->from("main");
+		$this->db->where("login", $id_joueur);
+		$query = $this->db->get();
+		return $query->result_array();
+	}
 
 }

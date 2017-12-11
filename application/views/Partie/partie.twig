@@ -30,6 +30,61 @@
 		</div>
 
 	</div>
+
+	{#<div id="myModal" class="modal fade">
+		<div class="modal-dialog">
+			<div class="box" style="overflow: hidden;">
+				<div class="box-header with-border">
+					<h3 class="box-title"> Effet du baron </h3>
+					<button class="close" aria-hidden="true" type="button" data-dismiss="modal">×</button>
+				</div>
+				<div class="box-body">
+                    Choisissez un joueur
+				</div>
+			</div>
+		</div>
+	</div>#}
+	<div id="myModal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Modal title</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p>Modal body text goes here.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary">Save changes</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="myModalCarte" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Modal title</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p>Modal body text goes here.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary">Save changes</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
 {% endblock %}
 
 {% block javascript %}
@@ -66,41 +121,63 @@
 			switch (id_carte) {
 				case 1:
 					//Garde
+					var tabAd;
+					var joueur_selected;
+					var carte_selected;
+					var tab;
+                    $.getJSON("{{ base_url('Game_c/getAdversaires') }}", function (result) {
+                        if (!result) {
+                            tabAd = JSON.parse(result);
+                            joueur_selected = $('#myModal').modal('show'); // popup qui propose les joueurs
+                        }
+                    });
+                    $.getJSON("{{ base_url('Game_c/getCartesSansGarde') }}", function (result) {
+                        if (!result) {
+                            tab = JSON.parse(result);
+                            carte_selected = $('#myModalCarte').modal('show'); // popup qui propose les cartes
+                        }
+                    });
 
 					break;
 				case 2:
 					//Pretre
+                    $.getJSON("{{ base_url('Game_c/getAdversaires') }}", function (result) {
+                        if (!result) {
+                            var tab = JSON.parse(result);
+                            var joueur_selected = $('#myModal').modal('show'); // popup qui propose les joueurs
+                            $.ajax({
+                                url: "{{ base_url('Game_c/voirMain') }}",
+                                type: 'POST',
+                                contentType: "application/json",
+                                dataType: 'json',
+                                data: JSON.stringify(joueur_selected),
+                                success: function(msg) {
+                                    alert(msg);
+                                    var cartes_adversaire = JSON.parse(msg);
+                                    console.log(cartes_adversaire);
+                                }
+                            });
+                        }
+                    });
 					break;
 				case 3:
 					//Baron
-					$.getJSON("{{ base_url('Game_c/getJoueurs/3') }}", function (result) {
+					$.getJSON("{{ base_url('Game_c/getAdversaires') }}", function (result) {
 						if (!result) {
 							var tab = JSON.parse(result);
-							var joueur_selected = xx; // popup qui propose les joueurs
-							if (/*popup réponse */) {
-								/*$.ajax({
-									url: "{{ base_url('Game_c/joueurCompare') }}",
-									type: 'POST',
-									contentType: "application/json",
-									dataType: 'json',
-									data: JSON.stringify(joueur_selected),
-									success: function(msg) {
-										alert(msg);
-										un tableau JSON qui contient les cartes du joueur
-										var cartes_adversaire = JSON.parse(msg);
-										console.log(cartes_adversaire);
-									}
-								});*/
-
-								/*$.getJSON("{{ base_url('Game_c/joueurCompare/idjoueur') }}", function (res) {
-									if (result) {
-										alert(msg);
-										un tableau JSON qui contient les cartes du joueur
-										var cartes_adversaire = JSON.parse(msg);
-										console.log(cartes_adversaire);
-									}
-								});*/
-							}
+							var joueur_selected = $('#myModal').modal('show'); // popup qui propose les joueurs
+							$.ajax({
+								url: "{{ base_url('Game_c/joueurCompare') }}",
+								type: 'POST',
+								contentType: "application/json",
+								dataType: 'json',
+								data: JSON.stringify(joueur_selected),
+								success: function(msg) {
+									alert(msg);
+									var cartes_adversaire = JSON.parse(msg);
+									console.log(cartes_adversaire);
+								}
+							});
 						}
 					});
 					break;

@@ -155,36 +155,18 @@ class Game_c extends CI_Controller {
 		echo json_encode($this->Game_m->pioche($id_partie, $this->Game_m->getCurrentManche($id_partie)));
 	}
 
-	public function action($id_carte) {
-		switch ($id_carte) {
-			case 1:
-				//Garde
+	public function getAdversaires(){
+        $this->check_isConnected();
+        echo json_encode($this->Game_m->getAdvers($this->session->userdata('id_partie'), $this->session->userdata('login')));
+    }
 
-				break;
-			case 2:
-				//Pretre
-				break;
-			case 3:
-				//Baron
-				break;
-			case 4:
-				//Servante
-				break;
-			case 5:
-				//Prince
-				break;
-			case 6:
-				//Roi
-				break;
-			case 7:
-				//Comtesse
-				break;
-			case 8:
-				//Princesse
+    public function getCartesSansGarde(){
+        $this->check_isConnected();
+        echo json_encode($this->Game_m->getCartesSansG());
+    }
 
-				break;
-			default:
-				echo "Carte inexistante";
-		}
-	}
+    public function voirMain($id_joueur){
+        $this->check_isConnected();
+        echo json_encode($this->Game_m->voirMain_m($id_joueur));
+    }
 }
