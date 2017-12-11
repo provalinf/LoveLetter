@@ -71,17 +71,14 @@ class Game_c extends CI_Controller {
 	}
 
 	public function joueurCompare($id_adversaire) {
-		/* ... */
-		$cartes_adversaire = array();
-		echo json_encode($cartes_adversaire);
+        $this->check_isPartieSelected();
+        echo json_encode($this->Game_m->getJoueurPlusPetiteCarte($id_adversaire, $this->session->userdata('login'), $this->session->userdata('id_partie')));
 	}
 
-	public function joueurCompare2() {
-		/* ... */
-		$id_adversaire     = json_decode(stripslashes(file_get_contents("php://input")));
-		$cartes_adversaire = array();
-		echo json_encode($cartes_adversaire);
-	}
+	public function echangeMain($id_adversaire){
+        $this->check_isPartieSelected();
+        echo json_encode($this->Game_m->echangeMain_m($id_adversaire, $this->session->userdata('login'), $this->session->userdata('id_partie')));
+    }
 
 	public function play() {
 		$this->check_isPartieSelected();

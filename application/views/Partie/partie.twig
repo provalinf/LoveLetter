@@ -229,15 +229,15 @@
 							var tab = JSON.parse(result);
 							var joueur_selected = $('#myModal').modal('show'); // popup qui propose les joueurs
 							$.ajax({
-								url: "{{ base_url('Game_c/joueurCompare') }}",
+								url: "{{ base_url('Game_c/getJoueurPlusPetiteCarte') }}",
 								type: 'POST',
 								contentType: "application/json",
 								dataType: 'json',
 								data: JSON.stringify(joueur_selected),
 								success: function (msg) {
 									alert(msg);
-									var cartes_adversaire = JSON.parse(msg);
-									console.log(cartes_adversaire);
+									var perdant = JSON.parse(msg);
+									console.log(perdant);
 								}
 							});
 						}
@@ -251,6 +251,24 @@
 					break;
 				case 6:
 					//Roi
+                    $.getJSON("{{ base_url('Game_c/getAdversaires') }}", function (result) {
+                        if (!result) {
+                            var tab = JSON.parse(result);
+                            var joueur_selected = $('#myModal').modal('show'); // popup qui propose les joueurs
+                            $.ajax({
+                                url: "{{ base_url('Game_c/echangeMain') }}",
+                                type: 'POST',
+                                contentType: "application/json",
+                                dataType: 'json',
+                                data: JSON.stringify(joueur_selected),
+                                success: function(msg) {
+                                    alert(msg);
+                                    var cartes_adversaire = JSON.parse(msg);
+                                    console.log(cartes_adversaire);
+                                }
+                            });
+                        }
+                    });
 					break;
 				case 7:
 					//Comtesse
