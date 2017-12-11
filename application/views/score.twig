@@ -1,28 +1,28 @@
 {% extends "layout.twig" %}
 {% block contenu %}
 
-    <div class="container">
-    <table class="table table-striped table-dark">
-        <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">Login</th>
-            <th scope="col">Numéro manche</th>
-            <th scope="col">Score</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for user in liste_score %}
-            <tr>
-                <th scope="row">1</th>
-                <td>{{ user.LOGIN }}</td>
-                <td>{{ user.NUM_MANCHE }}</td>
-                <td>{{ user.SCORE }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    </div>
+	<div class="container contain-background">
+		<table class="table table-striped table-dark">
+			<thead>
+			<tr>
+				<th scope="col">#</th>
+				<th scope="col">Login</th>
+				<th scope="col">Numéro manche</th>
+				<th scope="col">Score</th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for user in liste_score %}
+				<tr>
+					<th scope="row">1</th>
+					<td>{{ user.LOGIN }}</td>
+					<td>{{ user.NUM_MANCHE }}</td>
+					<td>{{ user.SCORE }}</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
 
 
 

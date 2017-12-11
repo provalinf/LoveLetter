@@ -30,9 +30,19 @@ class Game_c extends CI_Controller {
 	}
 
 	public function rejoindrePartie() {
-		$this->twig->display('Partie/rejoindre', ['titre' => "Rejoindre une partie"]);
+		$this->twig->display('Partie/rejoindre', [
+			'titre' => "Rejoindre une partie", 'liste_parties' => $this->Game_m->getPartiesDispo()
+		]);
 	}
 
+	public function rejoindre($id_partie) {
+		if (empty($id_partie) && (!isset($this->session->userdata()['id_partie']) && !$this->session->userdata('id_partie'))) {
+			redirect('Game_c/partie');
+		} else {
+			$this->session->set_userdata(['id_partie' => $id_partie]);
+			redirect('Game_c/partie');
+		}
+	}
 
 	public function validFormCreerPartie() {
 		$this->form_validation->set_rules('name', 'Nom', 'trim|required|min_length[2]|max_length[20]');
@@ -78,15 +88,19 @@ class Game_c extends CI_Controller {
 		$id_joueur = $this->session->userdata('login');
 		$id_partie = $this->session->userdata('id_partie');
 
+		$return = ['descr' => "", 'erreur' => false];
+
 		$nb_manche_par_joueurs = array(2 => 7, 3 => 5, 4 => 4);
 
 		if ($this->Game_m->PartieIsFinished($id_partie)) {
-			echo json_encode("Partie terminée. Le gagnant est {$this->Game_m->getWinner($id_partie)}");
+			$return['descr'] = "Partie terminée. Le gagnant est {$this->Game_m->getWinner($id_partie)}";
+			echo json_encode($return);
 			return;
 		}
 
 		if (!$this->Game_m->AllPlayersConnected($id_partie)) {
-			echo json_encode("En attente de joueur");
+			$return['descr'] = "En attente de joueur";
+			echo json_encode($return);
 			return;
 		}
 
@@ -99,25 +113,28 @@ class Game_c extends CI_Controller {
 			if ($nb_manche == 0 || $this->Game_m->MancheIsFinished($id_partie, $num_current_manche)) {
 				$joueurs = $this->Game_m->getJoueursPartie($id_partie);
 
-				if ($this->Game_m->MancheIsFinished($id_partie, $num_current_manche)) {
+				if ($nb_manche != 0 && $this->Game_m->MancheIsFinished($id_partie, $num_current_manche)) {
 					$this->Game_m->defineScoresJoueurs($joueurs, $num_current_manche);
 				}
+				if ($nb_manche < $nb_manche_par_joueurs[count($joueurs)]) {
 
-				if ($nb_manche < $nb_manche_par_joueurs[$nb_manche]) {
-					$num_init_manche = $this->Game_m->initManche([
-						'num_manche' => $nb_manche + 1, 'id_partie' => $id_partie
-					]);
-					$this->Game_m->InitPioche($id_partie, $num_init_manche);
-					$this->Game_m->InitMainJoueurs($id_partie, $num_init_manche);
-					//$this->Game_m->removeCartesEnFonctionNbJoueurs($id_partie, count($joueurs));
+					if ($nb_manche == 0 || ($nb_manche != 0 && $this->Game_m->MancheIsFinished($id_partie, $num_current_manche))) {
+						$num_init_manche = $this->Game_m->initManche([
+							'id_partie' => $id_partie
+						]);
 
-					if ($num_init_manche == 1) {
-						$this->Game_m->defineJoueurSuivant($joueurs[0]['login'], $id_partie);
-					} else {
-						$joueur_suivant = $this->Game_m->getIdWinnerManche($nb_manche);
-						$this->Game_m->defineJoueurSuivant($joueur_suivant, $id_partie);
+						$this->Game_m->InitPioche($id_partie, $num_init_manche);
+						$this->Game_m->InitMainJoueurs($id_partie, $num_init_manche);
+						//$this->Game_m->removeCartesEnFonctionNbJoueurs($id_partie, count($joueurs));
+
+						if ($num_init_manche == 1) {
+							$this->Game_m->defineJoueurSuivant($joueurs[0]['login'], $id_partie);
+						} else {
+							$joueur_suivant = $this->Game_m->getIdWinnerManche($nb_manche);
+							$this->Game_m->defineJoueurSuivant($joueur_suivant, $id_partie);
+						}
+						$num_current_manche = $num_init_manche;    // Facultatif
 					}
-					$num_current_manche = $num_init_manche;    // Facultatif
 				} else {
 					$this->Game_m->definePartieFinished($id_partie);
 				}
@@ -125,12 +142,14 @@ class Game_c extends CI_Controller {
 		}
 
 		if (empty($num_current_manche)) {
-			echo json_encode("En attente d'une nouvelle manche");
+			$return['descr'] = "En attente d'une nouvelle manche";
+			echo json_encode($return);
 			return;
 		}
 
 		if ($this->Game_m->MancheIsFinished($id_partie, $num_current_manche)) {
-			echo json_encode("Manche terminée");
+			$return['descr'] = "Manche terminée";
+			echo json_encode($return);
 			return;
 		}
 
@@ -155,18 +174,18 @@ class Game_c extends CI_Controller {
 		echo json_encode($this->Game_m->pioche($id_partie, $this->Game_m->getCurrentManche($id_partie)));
 	}
 
-	public function getAdversaires(){
-        $this->check_isConnected();
-        echo json_encode($this->Game_m->getAdvers($this->session->userdata('id_partie'), $this->session->userdata('login')));
-    }
+	public function getAdversaires() {
+		$this->check_isConnected();
+		echo json_encode($this->Game_m->getAdvers($this->session->userdata('id_partie'), $this->session->userdata('login')));
+	}
 
-    public function getCartesSansGarde(){
-        $this->check_isConnected();
-        echo json_encode($this->Game_m->getCartesSansG());
-    }
+	public function getCartesSansGarde() {
+		$this->check_isConnected();
+		echo json_encode($this->Game_m->getCartesSansG());
+	}
 
-    public function voirMain($id_joueur){
-        $this->check_isConnected();
-        echo json_encode($this->Game_m->voirMain_m($id_joueur));
-    }
+	public function voirMain($id_joueur) {
+		$this->check_isConnected();
+		echo json_encode($this->Game_m->voirMain_m($id_joueur));
+	}
 }

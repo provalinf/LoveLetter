@@ -35,8 +35,8 @@ class Game_m extends CI_Model {
 
 	public function initManche($donnees) {
 		$result = $this->db->insert("Manche", $donnees);
-		return ($result) ? /*$this->db->insert_id()*/
-			$donnees['num_manche'] : false;
+		return ($result) ? $this->db->insert_id()
+			/*$donnees['num_manche']*/ : false;
 	}
 
 	public function getMainJoueur($id_joueur, $manche) {
@@ -47,6 +47,7 @@ class Game_m extends CI_Model {
 	}
 
 	public function getJoueursPartie($id_partie) {
+		$this->db->select("login, id_partie, temps_actualisation, dernier_coup, joue");
 		$this->db->from("Joueur");
 		$this->db->where("id_partie", $id_partie);
 		$this->db->order_by("login", "ASC");
@@ -69,10 +70,21 @@ class Game_m extends CI_Model {
 		return $query->num_rows() != 0;
 	}
 
+	public function addPlayerToPartie($id_joueur, $id_partie) {
+		return $this->db->insert("Joueur", ["login" => $id_joueur, "id_partie" => $id_partie]);
+	}
+
 	public function refreshActualisationConnexionJoueur($id_joueur, $id_partie) {
-		if (!$this->joueurIsInPartie($id_joueur, $id_partie)) return false;
+		if (!$this->joueurIsInPartie($id_joueur, $id_partie)) {
+			if (!$this->AllPlayersInscrits($id_partie)) {
+				$this->addPlayerToPartie($id_joueur, $id_partie);
+			} else {
+				return false;
+			}
+		}
+		$this->db->where(['id_partie' => $id_partie, 'login' => $id_joueur]);
 		$this->db->set('temps_actualisation', "CURRENT_TIMESTAMP", false);
-		return $this->db->update("Joueur", ['id_partie' => $id_partie, 'login' => $id_joueur]);
+		return $this->db->update("Joueur");
 	}
 
 	public function getNomPartie($id_partie) {
@@ -107,15 +119,44 @@ class Game_m extends CI_Model {
 		return $query->num_rows() != 0;
 	}
 
-	public function AllPlayersConnected($id_partie) {
+	public function getPartiesDispo() {
+		$this->db->select("id_partie, nom_partie, date_creation, nb_joueurs");
+		$this->db->from("Partie");
+		$this->db->where("finie", false);
+		$this->db->order_by("date_creation", "DESC");
+		$query   = $this->db->get();
+		$parties = array();
+		foreach ($query->result_array() as $partie) {
+			if (!$this->AllPlayersInscrits($partie['id_partie'])) {
+				$parties[] = $partie;
+			}
+		}
+		return $parties;
+	}
+
+	public function AllPlayersInscrits($id_partie) {
 		$joueurs = $this->getJoueursPartie($id_partie);
-		$this->db->select("nb_joueurs, CURRENT_TIMESTAMP");
+		$this->db->select("nb_joueurs");
 		$this->db->from("Partie");
 		$query = $this->db->get();
 		if (count($joueurs) != $query->row()->nb_joueurs) return false;
 
 		$this->db->from("Joueur");
-		$this->db->where("temps_actualisation <= DATE_ADD(NOW(), INTERVAL 15 SECOND");
+		$this->db->where("id_partie", $id_partie);
+		$query2 = $this->db->get();
+		return $query2->num_rows() == $query->row()->nb_joueurs;
+	}
+
+	public function AllPlayersConnected($id_partie) {
+		$joueurs = $this->getJoueursPartie($id_partie);
+		$this->db->select("nb_joueurs");
+		$this->db->from("Partie");
+		$query = $this->db->get();
+		if (count($joueurs) != $query->row()->nb_joueurs) return false;
+
+		$this->db->from("Joueur");
+		$this->db->where("temps_actualisation <= DATE_ADD(NOW(), INTERVAL 15 SECOND)");
+		$this->db->where("id_partie", $id_partie);
 		$query2 = $this->db->get();
 		return $query2->num_rows() == $query->row()->nb_joueurs;
 	}
@@ -166,6 +207,7 @@ class Game_m extends CI_Model {
 	}
 
 	public function check_isFirstMasterPlayer($id_partie, $id_joueur) {
+		$this->db->select("login");
 		$this->db->from("Joueur");
 		$this->db->where("id_partie", $id_partie);
 		$this->db->order_by("login", "ASC");
@@ -229,20 +271,21 @@ class Game_m extends CI_Model {
 		$this->db->select("num_manche");
 		$this->db->from("Manche");
 		$this->db->where("id_partie");
-		$query   = $this->db->get();
+		$query = $this->db->get();
+		if ($query->num_rows() == 0) return false;
 		$joueurs = array();
-		foreach ($query->row_arrays() as $num_manche) ++$joueurs[$this->getIdWinnerManche($num_manche)];
+		foreach ($query->result_array() as $num_manche) ++$joueurs[$this->getIdWinnerManche($num_manche)];
 		arsort($joueurs);
 		return array_keys($joueurs)[0];
 	}
 
 	public function InitPioche($id_partie, $num_init_manche) {
 		$this->db->select("id_carte, nb_cartes");
-		$this->db->from("cartes");
+		$this->db->from("carte");
 		$query  = $this->db->get();
 		$cartes = array();
-		foreach ($query->row_arrays() as $carte) for ($i = 0; $i < $carte['nb_cartes']; $i++) $cartes[] = array(
-			'num_manche' => $num_init_manche, 'id_carte'
+		foreach ($query->row_array() as $carte) for ($i = 0; $i < $carte['nb_cartes']; $i++) $cartes[] = array(
+			'num_manche' => $num_init_manche, 'id_carte'=>$carte['id_carte']
 		);
 		return $this->db->insert_batch("est_disponible", $cartes);
 	}
@@ -258,8 +301,7 @@ class Game_m extends CI_Model {
 
 	}*/
 
-	public function getAdvers($id_partie, $id_joueur)
-	{
+	public function getAdvers($id_partie, $id_joueur) {
 		$this->db->select("id_joueur");
 		$this->db->from("joueur");
 		$this->db->where("id_partie", $id_partie);
@@ -269,8 +311,7 @@ class Game_m extends CI_Model {
 		return $query->result_array();
 	}
 
-	public function getCartesSansG()
-	{
+	public function getCartesSansG() {
 		$this->db->select("image");
 		$this->db->from("carte");
 		$this->db->where_not_in("id_carte", 1);
@@ -278,8 +319,7 @@ class Game_m extends CI_Model {
 		return $query->result_array();
 	}
 
-	public function voirMain_m($id_joueur)
-	{
+	public function voirMain_m($id_joueur) {
 		$this->db->select("image");
 		$this->db->from("main");
 		$this->db->where("login", $id_joueur);

@@ -102,9 +102,9 @@
 			});
 			console.log("actualisation");
 
-			$.getJSON("{{ base_url('Game_c/getNbJoueurs') }}", function (result) {
-				console.log("retour:" + result);
-				if (!result) {
+			$.getJSON("{{ base_url('Game_c/play') }}", function (result) {
+				console.log("retour:" + JSON.stringify(result));
+				if (result['erreur']) {
 					alert('Une erreur est survenue');
 					clearAllInterval();
 				}
@@ -203,7 +203,7 @@
 		}
 
 		$(document).ready(function () {
-				intervals[0] = window.setInterval(refreshTimeConnect, actualisationInterval);
+				//intervals[0] = window.setInterval(refreshTimeConnect, actualisationInterval);
 			}
 		);
 	</script>
