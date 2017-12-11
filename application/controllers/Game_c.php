@@ -126,11 +126,12 @@ class Game_c extends CI_Controller {
 						$this->Game_m->InitPioche($id_partie, $num_init_manche);
 						$this->Game_m->InitMainJoueurs($id_partie, $num_init_manche);
 						//$this->Game_m->removeCartesEnFonctionNbJoueurs($id_partie, count($joueurs));
+						$nb_manche = $this->Game_m->getNbManches($id_partie);
 
-						if ($num_init_manche == 1) {
+						if (count($nb_manche) == 1) {
 							$this->Game_m->defineJoueurSuivant($joueurs[0]['login'], $id_partie);
 						} else {
-							$joueur_suivant = $this->Game_m->getIdWinnerManche($nb_manche);
+							$joueur_suivant = $this->Game_m->getIdWinnerPrevManche($id_partie);
 							$this->Game_m->defineJoueurSuivant($joueur_suivant, $id_partie);
 						}
 						$num_current_manche = $num_init_manche;    // Facultatif
@@ -149,10 +150,28 @@ class Game_c extends CI_Controller {
 
 		if ($this->Game_m->MancheIsFinished($id_partie, $num_current_manche)) {
 			$return['descr'] = "Manche terminée";
+			$this->session->unset_userdata('num_manche');
 			echo json_encode($return);
 			return;
 		}
+		$this->session->set_userdata(['num_manche' => $num_current_manche]);
 
+	}
+
+	public function afficherCartesJoueur() {
+		$id_joueur = $this->session->userdata('login');
+		$id_partie = $this->session->userdata('id_partie');
+		$num_manche = $this->session->userdata('num_manche');
+		$return    = array(
+			'main'     => $this->Game_m->getMainJoueur($id_joueur, $num_manche),
+			'defausse' => $this->Game_m->getDefausseJoueur($id_joueur, $num_manche)
+		);
+		echo json_encode($return);
+	}
+
+	public function testMain() {
+		$this->Game_m->InitMainJoueurs(10, 39);
+		//$this->Game_m->InitPioche(10, 39);
 	}
 
 	public function refreshTimeConnect() {
@@ -168,10 +187,11 @@ class Game_c extends CI_Controller {
 		echo json_encode($this->Game_m->defausse($id_carte, $id_joueur, $this->session->userdata('id_partie')));
 	}
 
-	public function piocher($id_joueur) {
+	public function piocher() {
 		$this->check_isConnected();
+		$id_joueur = $this->session->userdata('login');
 		$id_partie = $this->session->userdata('id_partie');
-		echo json_encode($this->Game_m->pioche($id_partie, $this->Game_m->getCurrentManche($id_partie)));
+		echo json_encode($this->Game_m->pioche($id_joueur, $this->Game_m->getCurrentManche($id_partie)));
 	}
 
 	public function getAdversaires() {

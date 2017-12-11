@@ -13,18 +13,18 @@
 			</div>
 		</div>
 		<div class="row justify-content-md-center">
-			<div class="col-">
+			<div class="col-" id="defausse">
 				Cartes joueurs
 			</div>
 		</div>
 		<div class="row justify-content-md-center">
 			<div class="col">
-				Pioche
+				<img src="{{ base_url("../assets/images/verso.png") }}" onclick='clicPioche()'>
 			</div>
-			<div class="col-">
+			<div class="col-" id="main_joueur">
 				Main persistante
 			</div>
-			<div class="col">
+			<div class="col" id="main_defausser">
 				Carte à défausser
 			</div>
 		</div>
@@ -44,7 +44,7 @@
 			</div>
 		</div>
 	</div>#}
-	<div id="myModal" class="modal" tabindex="-1" role="dialog">
+	{#<div id="myModal" class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -82,7 +82,7 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	</div>#}
 
 
 {% endblock %}
@@ -109,6 +109,68 @@
 					clearAllInterval();
 				}
 			});
+
+			refreshMain();
+
+			/*$.getJSON("{{ base_url('Game_c/afficherDefausseAdversaire') }}", function (result) {
+				cartes_joueur = result;
+				//console.log("cartes:" + JSON.stringify(result));
+				console.log(cartes_joueur['main']);
+				console.log(cartes_joueur["main"][0]['ID_CARTE']);
+
+				$("#main_joueur").html("<img src='../../"+cartes_joueur["main"][0]['IMAGE']+"' height='300' onclick='clicMain(\""+cartes_joueur["main"][0]['ID_CARTE']+"\")'>");
+
+				if (result['erreur']) {
+					alert('Une erreur est survenue');
+					clearAllInterval();
+				}
+			});*/
+		}
+
+		function refreshMain() {
+			$.getJSON("{{ base_url('Game_c/afficherCartesJoueur') }}", function (result) {
+				cartes_joueur = result;
+				//console.log("cartes:" + JSON.stringify(result));
+				console.log(cartes_joueur['main']);
+				console.log(cartes_joueur["main"][0]['ID_CARTE']);
+				console.log("taille tableau" + cartes_joueur["main"].length);
+				for (var i = 0; i < cartes_joueur["main"].length; i++) {
+					console.log("hop");
+					if (i > 1) {
+						$("#main_joueur").html("<img src='../../" + cartes_joueur["main"][i]['IMAGE'] + "' height='300' onclick='clicMain(" + cartes_joueur["main"][i]['ID_CARTE'] + ")'>");
+					} else {
+						$("#main_defausser").html("<img src='../../" + cartes_joueur["main"][i]['IMAGE'] + "' height='300' onclick='clicMain(" + cartes_joueur["main"][i]['ID_CARTE'] + ")'>");
+					}
+				}
+
+				$("#defausse").append("");	// vide affichage defausse
+				for (var j = 0; j < cartes_joueur["defausse"].length; j++) {
+					$("#defausse").append("<img src='../../" + cartes_joueur["main"][j]['IMAGE'] + "' height='300' onclick='clicMain(" + cartes_joueur["main"][j]['ID_CARTE'] + ")'>");
+				}
+
+				if (result['erreur']) {
+					alert('Une erreur est survenue');
+					clearAllInterval();
+				}
+			});
+		}
+
+		function clicPioche() {
+			a_pioche = true;
+			$.getJSON("{{ base_url('Game_c/piocher') }}", function (result) {
+				console.log(result);
+				if (result['erreur']) {
+					alert('Une erreur est survenue');
+					clearAllInterval();
+				} else {
+					refreshMain();
+				}
+			});
+		}
+
+		function clicMain(id_carte) {
+			console.log(id_carte);
+			action(id_carte);
 		}
 
 		function clearAllInterval() {
@@ -125,40 +187,40 @@
 					var joueur_selected;
 					var carte_selected;
 					var tab;
-                    $.getJSON("{{ base_url('Game_c/getAdversaires') }}", function (result) {
-                        if (!result) {
-                            tabAd = JSON.parse(result);
-                            joueur_selected = $('#myModal').modal('show'); // popup qui propose les joueurs
-                        }
-                    });
-                    $.getJSON("{{ base_url('Game_c/getCartesSansGarde') }}", function (result) {
-                        if (!result) {
-                            tab = JSON.parse(result);
-                            carte_selected = $('#myModalCarte').modal('show'); // popup qui propose les cartes
-                        }
-                    });
+					$.getJSON("{{ base_url('Game_c/getAdversaires') }}", function (result) {
+						if (!result) {
+							tabAd = JSON.parse(result);
+							joueur_selected = $('#myModal').modal('show'); // popup qui propose les joueurs
+						}
+					});
+					$.getJSON("{{ base_url('Game_c/getCartesSansGarde') }}", function (result) {
+						if (!result) {
+							tab = JSON.parse(result);
+							carte_selected = $('#myModalCarte').modal('show'); // popup qui propose les cartes
+						}
+					});
 
 					break;
 				case 2:
 					//Pretre
-                    $.getJSON("{{ base_url('Game_c/getAdversaires') }}", function (result) {
-                        if (!result) {
-                            var tab = JSON.parse(result);
-                            var joueur_selected = $('#myModal').modal('show'); // popup qui propose les joueurs
-                            $.ajax({
-                                url: "{{ base_url('Game_c/voirMain') }}",
-                                type: 'POST',
-                                contentType: "application/json",
-                                dataType: 'json',
-                                data: JSON.stringify(joueur_selected),
-                                success: function(msg) {
-                                    alert(msg);
-                                    var cartes_adversaire = JSON.parse(msg);
-                                    console.log(cartes_adversaire);
-                                }
-                            });
-                        }
-                    });
+					$.getJSON("{{ base_url('Game_c/getAdversaires') }}", function (result) {
+						if (!result) {
+							var tab = JSON.parse(result);
+							var joueur_selected = $('#myModal').modal('show'); // popup qui propose les joueurs
+							$.ajax({
+								url: "{{ base_url('Game_c/voirMain') }}",
+								type: 'POST',
+								contentType: "application/json",
+								dataType: 'json',
+								data: JSON.stringify(joueur_selected),
+								success: function (msg) {
+									alert(msg);
+									var cartes_adversaire = JSON.parse(msg);
+									console.log(cartes_adversaire);
+								}
+							});
+						}
+					});
 					break;
 				case 3:
 					//Baron
@@ -172,7 +234,7 @@
 								contentType: "application/json",
 								dataType: 'json',
 								data: JSON.stringify(joueur_selected),
-								success: function(msg) {
+								success: function (msg) {
 									alert(msg);
 									var cartes_adversaire = JSON.parse(msg);
 									console.log(cartes_adversaire);

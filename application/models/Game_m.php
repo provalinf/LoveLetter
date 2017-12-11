@@ -35,13 +35,14 @@ class Game_m extends CI_Model {
 
 	public function initManche($donnees) {
 		$result = $this->db->insert("Manche", $donnees);
-		return ($result) ? $this->db->insert_id()
-			/*$donnees['num_manche']*/ : false;
+		return ($result) ? $this->db->insert_id() /*$donnees['num_manche']*/ : false;
 	}
 
-	public function getMainJoueur($id_joueur, $manche) {
-		$this->db->from("Main");
+	public function getMainJoueur($id_joueur, $num_manche) {
+		$this->db->from("Main as m");
+		$this->db->join("Carte as c", "c.id_carte=m.id_carte");
 		$this->db->where("login", $id_joueur);
+		$this->db->where("num_manche", $num_manche);
 		$query = $this->db->get();
 		return $query->result_array();
 	}
@@ -56,9 +57,9 @@ class Game_m extends CI_Model {
 	}
 
 	public function defineJoueurSuivant($id_joueur, $id_partie) {
-		$result = $this->db->update("Joueur", ['joue' => false], ['ip_partie' => $id_partie]);
+		$result = $this->db->update("Joueur", ['joue' => false], ['id_partie' => $id_partie]);
 		return $result && $this->db->update("Joueur", ['joue' => true], [
-				'ip_partie' => $id_partie, 'id_joueur' => $id_joueur
+				'id_partie' => $id_partie, 'login' => $id_joueur
 			]);
 	}
 
@@ -104,11 +105,13 @@ class Game_m extends CI_Model {
 	}
 
 
-	public function getWhatPlay($id_partie) {
+	public function getWhatPlay($id_partie, $id_joueur) {
 		$this->db->from("Joueur");
 		$this->db->where("id_partie", $id_partie);
-		$this->db->where("", $id_partie);
-		// Non fini
+		$this->db->where("login", $id_joueur);
+		$this->db->where("joue", true);
+		$query = $this->db->get();
+		return $query->num_rows() != 0;
 	}
 
 	public function PartieIsFinished($id_partie) {
@@ -184,13 +187,15 @@ class Game_m extends CI_Model {
 
 	public function pioche($id_joueur, $num_manche) {
 		$this->db->select("id_carte");
-		$this->db->from("est_disponible");
+		$this->db->from("Est_disponible");
 		$this->db->order_by("rand()");
 		$this->db->limit(1);
-		$id_carte = $this->db->get();
-
-		$this->db->insert("main", [
-			'login' => $id_joueur, 'carte' => $id_carte, 'manche' => $num_manche
+		$query    = $this->db->get();
+		$id_carte = $query->row()->id_carte;
+		/*print_r($query);
+		print_r($query->row_array());*/
+		$this->db->insert("Main", [
+			'login' => $id_joueur, 'id_carte' => $id_carte, 'num_manche' => $num_manche
 		]);
 
 		$this->db->where("num_manche", $num_manche);
@@ -199,8 +204,17 @@ class Game_m extends CI_Model {
 		$this->db->delete("est_disponible");
 	}
 
+	public function getDefausseJoueur($id_joueur, $num_manche) {
+		$this->db->select("id_carte");
+		$this->db->from("Defausse");
+		$this->db->where("login", $id_joueur);
+		$this->db->where("num_manche", $num_manche);
+		$query    = $this->db->get();
+		return $query->result_array();
+	}
+
 	private function piocheIsEmpty($num_manche) {
-		$this->db->from("est_disponible");
+		$this->db->from("Est_disponible");
 		$this->db->where('num_manche', $num_manche);
 		$query = $this->db->get();
 		return $query->num_rows() == 0;
@@ -258,6 +272,17 @@ class Game_m extends CI_Model {
 		return $this->db->update("Partie", ['finie' => true]);
 	}
 
+	public function getIdWinnerPrevManche($id_partie) {
+		$this->db->from("Score_manche as sm");
+		$this->db->join("manche as m", "m.num_manche=sm.num_manche");
+		$this->db->where("m.id_partie", $id_partie);
+		$this->db->group_by("sm.num_manche");
+		$this->db->order_by("sm.score DESC, sm.num_manche DESC");
+		$this->db->limit(1,1);
+		$query = $this->db->get();
+		return $query->row()->login;
+	}
+
 	public function getIdWinnerManche($num_manche) {
 		$this->db->from("Score_manche");
 		$this->db->where("num_manche", $num_manche);
@@ -281,13 +306,14 @@ class Game_m extends CI_Model {
 
 	public function InitPioche($id_partie, $num_init_manche) {
 		$this->db->select("id_carte, nb_cartes");
-		$this->db->from("carte");
+		$this->db->from("Carte");
 		$query  = $this->db->get();
-		$cartes = array();
-		foreach ($query->row_array() as $carte) for ($i = 0; $i < $carte['nb_cartes']; $i++) $cartes[] = array(
-			'num_manche' => $num_init_manche, 'id_carte'=>$carte['id_carte']
+		$jeu_cartes = array();
+		foreach ($query->result_array() as $carte) for ($i = 0; $i < (int)$carte['nb_cartes']; $i++)
+			$jeu_cartes[] = array(
+			'num_manche' => $num_init_manche, 'id_carte' => $carte['id_carte']
 		);
-		return $this->db->insert_batch("est_disponible", $cartes);
+		return $this->db->insert_batch("Est_disponible", $jeu_cartes);
 	}
 
 	public function InitMainJoueurs($id_partie, $num_init_manche) {
