@@ -14,7 +14,6 @@
 		</div>
 		<div class="row justify-content-md-center">
 			<div class="col-" id="defausse">
-				Cartes joueurs
 			</div>
 		</div>
 		<div class="row justify-content-md-center">
@@ -22,31 +21,17 @@
 				<img src="{{ base_url("../assets/images/verso.png") }}" onclick='clicPioche()'>
 			</div>
 			<div class="col-" id="main_joueur">
-				Main persistante
 			</div>
 			<div class="col" id="main_defausser">
-				Carte à défausser
 			</div>
 		</div>
 
 	</div>
 
 	{#<div id="myModal" class="modal fade">
-		<div class="modal-dialog">
-			<div class="box" style="overflow: hidden;">
-				<div class="box-header with-border">
-					<h3 class="box-title"> Effet du baron </h3>
-					<button class="close" aria-hidden="true" type="button" data-dismiss="modal">×</button>
-				</div>
-				<div class="box-body">
-                    Choisissez un joueur
-				</div>
-			</div>
-		</div>
-	</div>#}
-	{#<div id="myModal" class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
+
 				<div class="modal-header">
 					<h5 class="modal-title">Modal title</h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -60,11 +45,31 @@
 					<button type="button" class="btn btn-primary">Save changes</button>
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 				</div>
+				</div>
+			</div>
+		</div>
+	</div>#}
+	<div id="myModal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Modal title</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+
+				</div>
+				{#<div class="modal-footer">
+					<button type="button" class="btn btn-primary">Save changes</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>#}
 			</div>
 		</div>
 	</div>
 
-	<div id="myModalCarte" class="modal" tabindex="-1" role="dialog">
+	{#<div id="myModalCarte" class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -131,9 +136,9 @@
 			$.getJSON("{{ base_url('Game_c/afficherCartesJoueur') }}", function (result) {
 				cartes_joueur = result;
 				//console.log("cartes:" + JSON.stringify(result));
-				console.log(cartes_joueur['main']);
-				console.log(cartes_joueur["main"][0]['ID_CARTE']);
-				console.log("taille tableau" + cartes_joueur["main"].length);
+				//console.log(cartes_joueur['main']);
+				//console.log(cartes_joueur["main"][0]['ID_CARTE']);
+				//console.log("taille tableau" + cartes_joueur["main"].length);
 				for (var i = 0; i < cartes_joueur["main"].length; i++) {
 					console.log("hop");
 					if (i > 1) {
@@ -179,6 +184,56 @@
 			});
 		}
 
+		function launchModal(id, titre, contenu) {
+			var css = ['box-success', 'box-danger', 'box-info'];
+			var modal = $('#myModal');
+			//modal.children().children().children().removeClass();
+			modal.children().children().children().addClass("box " + css[id]);
+			$('.modal-title').html(titre);
+			$('.modal-body').html(contenu);
+			/*modal.children().children().children().children(".modal-header").children(".modal-title").html(titre);
+			modal.children().children().children().children(".modal-body").children().html(contenu);*/
+			modal.modal('show');
+		}
+
+		function action_confirm(id_carte, id_cible) {
+
+			switch (id_carte) {
+				case 1:
+					$.getJSON("{{ base_url('Game_c/getCartesSansGarde') }}", function (result) {
+						tab = JSON.parse(result);
+						carte_selected = $('#myModalCarte').modal('show'); // popup qui propose les cartes
+						if (!result) {
+
+						}
+					});
+			}
+		}
+
+		function garde(id_cible) {
+			$('#myModal').modal('hide');
+			console.log("clic cible");
+			$.getJSON("{{ base_url('Game_c/getCartesSansGarde') }}", function (result) {
+				var contenu = "";
+				for (var i = 0; i < result.length; i++) {
+					contenu += "<img src='../../" + result[i]['image'] + "' height='300' onclick='garde_action(\"" + id_cible + "\"," + result[i]['id_carte'] + ")'>";
+				}
+				launchModal(1, "Deviner la carte", contenu);
+			});
+		}
+
+		function garde_action(id_cible, id_carte) {
+			$('#myModal').modal('hide');
+			console.log(id_cible+" "+id_carte);
+			$.getJSON("{{ base_url('Game_c/compareCarteJoueur/') }}"+id_cible+"/"+id_carte, function (result) {
+				if (result) {
+					console.log("ok");
+				}else {
+					console.log("pas ok");
+				}
+			});
+		}
+
 		function action(id_carte) {
 			switch (id_carte) {
 				case 1:
@@ -188,15 +243,16 @@
 					var carte_selected;
 					var tab;
 					$.getJSON("{{ base_url('Game_c/getAdversaires') }}", function (result) {
-						if (!result) {
-							tabAd = JSON.parse(result);
-							joueur_selected = $('#myModal').modal('show'); // popup qui propose les joueurs
+						console.log(result);
+						/*joueur_selected = */
+						var contenu = "";
+						for (var i = 0; i < result.length; i++) {
+							contenu += '<button type="button" class="btn btn-dark" onclick=garde("' + result[i]['LOGIN'] + '")>' + result[i]['LOGIN'] + '</button>';
 						}
-					});
-					$.getJSON("{{ base_url('Game_c/getCartesSansGarde') }}", function (result) {
+						launchModal(1, "Selectionner la cible", contenu);
+
 						if (!result) {
-							tab = JSON.parse(result);
-							carte_selected = $('#myModalCarte').modal('show'); // popup qui propose les cartes
+
 						}
 					});
 
@@ -251,31 +307,32 @@
 					break;
 				case 6:
 					//Roi
-                    $.getJSON("{{ base_url('Game_c/getAdversaires') }}", function (result) {
-                        if (!result) {
-                            var tab = JSON.parse(result);
-                            var joueur_selected = $('#myModal').modal('show'); // popup qui propose les joueurs
-                            $.ajax({
-                                url: "{{ base_url('Game_c/echangeMain') }}",
-                                type: 'POST',
-                                contentType: "application/json",
-                                dataType: 'json',
-                                data: JSON.stringify(joueur_selected),
-                                success: function(msg) {
-                                    alert(msg);
-                                    var cartes_adversaire = JSON.parse(msg);
-                                    console.log(cartes_adversaire);
-                                }
-                            });
-                        }
-                    });
+					$.getJSON("{{ base_url('Game_c/getAdversaires') }}", function (result) {
+						if (!result) {
+							var tab = JSON.parse(result);
+							var joueur_selected = $('#myModal').modal('show'); // popup qui propose les joueurs
+							$.ajax({
+								url: "{{ base_url('Game_c/echangeMain') }}",
+								type: 'POST',
+								contentType: "application/json",
+								dataType: 'json',
+								data: JSON.stringify(joueur_selected),
+								success: function (msg) {
+									alert(msg);
+									var cartes_adversaire = JSON.parse(msg);
+									console.log(cartes_adversaire);
+								}
+							});
+						}
+					});
 					break;
 				case 7:
 					//Comtesse
 					break;
 				case 8:
 					//Princesse
-
+					$.getJSON("{{ base_url('Game_c/deleteMain') }}", function (result) {
+					});
 					break;
 				default:
 					console.log("Carte inexistante");

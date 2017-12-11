@@ -71,14 +71,26 @@ class Game_c extends CI_Controller {
 	}
 
 	public function joueurCompare($id_adversaire) {
-        $this->check_isPartieSelected();
-        echo json_encode($this->Game_m->getJoueurPlusPetiteCarte($id_adversaire, $this->session->userdata('login'), $this->session->userdata('id_partie')));
+		$this->check_isPartieSelected();
+		echo json_encode($this->Game_m->getJoueurPlusPetiteCarte($id_adversaire, $this->session->userdata('login'), $this->session->userdata('id_partie')));
 	}
 
-	public function echangeMain($id_adversaire){
-        $this->check_isPartieSelected();
-        echo json_encode($this->Game_m->echangeMain_m($id_adversaire, $this->session->userdata('login'), $this->session->userdata('id_partie')));
-    }
+	public function echangeMain($id_adversaire) {
+		$this->check_isPartieSelected();
+		echo json_encode($this->Game_m->echangeMain_m($id_adversaire, $this->session->userdata('login'), $this->session->userdata('id_partie')));
+	}
+
+	public function compareCarteJoueur($id_adversaire, $id_carte_devinee) {
+		$this->check_isPartieSelected();
+		if ($this->Game_m->devineCarte($id_adversaire, $id_carte_devinee, $this->session->userdata('num_manche'))) {
+			$this->Game_m->deleteMain($id_adversaire, $this->session->userdata('num_manche'));
+		}
+	}
+
+	public function deleteMain() {
+		$this->check_isPartieSelected();
+		$this->Game_m->deleteMain($this->session->userdata('login'), $this->session->userdata('num_manche'));
+	}
 
 	public function play() {
 		$this->check_isPartieSelected();
@@ -156,10 +168,10 @@ class Game_c extends CI_Controller {
 	}
 
 	public function afficherCartesJoueur() {
-		$id_joueur = $this->session->userdata('login');
-		$id_partie = $this->session->userdata('id_partie');
+		$id_joueur  = $this->session->userdata('login');
+		$id_partie  = $this->session->userdata('id_partie');
 		$num_manche = $this->session->userdata('num_manche');
-		$return    = array(
+		$return     = array(
 			'main'     => $this->Game_m->getMainJoueur($id_joueur, $num_manche),
 			'defausse' => $this->Game_m->getDefausseJoueur($id_joueur, $num_manche)
 		);
@@ -193,7 +205,8 @@ class Game_c extends CI_Controller {
 
 	public function getAdversaires() {
 		$this->check_isConnected();
-		echo json_encode($this->Game_m->getAdvers($this->session->userdata('id_partie'), $this->session->userdata('login')));
+		$id_partie = $this->session->userdata('id_partie');
+		echo json_encode($this->Game_m->getAdvers($id_partie, $this->Game_m->getCurrentManche($id_partie), $this->session->userdata('login')));
 	}
 
 	public function getCartesSansGarde() {

@@ -188,10 +188,12 @@ class Game_m extends CI_Model {
 	public function pioche($id_joueur, $num_manche) {
 		$this->db->select("id_carte");
 		$this->db->from("Est_disponible");
+		$this->db->where("num_manche", $num_manche);
 		$this->db->order_by("rand()");
 		$this->db->limit(1);
 		$query    = $this->db->get();
 		$id_carte = $query->row()->id_carte;
+		echo $id_carte;
 		/*print_r($query);
 		print_r($query->row_array());*/
 		$this->db->insert("Main", [
@@ -244,6 +246,22 @@ class Game_m extends CI_Model {
 		$this->db->where("num_manche", $num_manche);
 		$query    = $this->db->get();
 		return $query->result_array();
+	}
+
+	public function devineCarte($id_adversaire, $id_carte_devinee, $num_manche) {
+		$this->db->from('Main');
+		$this->db->where("login", $id_adversaire);
+		$this->db->where("num_manche", $num_manche);
+		$this->db->where("id_carte", $id_carte_devinee);
+
+		$query = $this->db->get();
+		return $query->num_rows() != 0;
+	}
+
+	public function deleteMain($id_adversaire, $num_manche) {
+		$this->db->where("login", $id_adversaire);
+		$this->db->where("num_manche", $num_manche);
+		return $this->db->delete("Main");
 	}
 
 	private function piocheIsEmpty($num_manche) {
@@ -354,25 +372,29 @@ class Game_m extends CI_Model {
 		foreach ($joueurs as $joueur) $this->pioche($joueur['login'], $num_init_manche);
 	}
 
-	/*public function removeCartesEnFonctionNbJoueurs($id_partie, $nb_joueur) {
-		$nb_cartes_remove_fonction_nb_joueurs = array(2 => 3);
-
-
-	}*/
-
-	public function getAdvers($id_partie, $id_joueur) {
-		$this->db->select("id_joueur");
-		$this->db->from("joueur");
-		$this->db->where("id_partie", $id_partie);
-		$this->db->where("joue", true);
-		$this->db->where_not_in("login", $id_joueur);
+	public function getAdvers($id_partie, $num_manche, $id_joueur) {
+		$this->db->from("Main as m");
+		$this->db->join("Joueur as j", "j.login=m.login");
+		$this->db->where("j.id_partie", $id_partie);
+		$this->db->where("m.num_manche", $num_manche);
+		$this->db->where_not_in("j.login", $id_joueur);
 		$query = $this->db->get();
 		return $query->result_array();
 	}
 
+	/*public function getAdvers($id_partie, $id_joueur) {
+
+		$this->db->select("login");
+		$this->db->from("joueur");
+		$this->db->where("id_partie", $id_partie);
+		$this->db->where_not_in("login", $id_joueur);
+		$query = $this->db->get();
+		return $query->result_array();
+	}*/
+
 	public function getCartesSansG() {
-		$this->db->select("image");
-		$this->db->from("carte");
+		$this->db->select("id_carte, image");
+		$this->db->from("Carte");
 		$this->db->where_not_in("id_carte", 1);
 		$query = $this->db->get();
 		return $query->result_array();
