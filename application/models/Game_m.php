@@ -199,7 +199,40 @@ class Game_m extends CI_Model {
 		$this->db->delete("est_disponible");
 	}
 
-	private function piocheIsEmpty($num_manche) {
+    public function getJoueurPlusPetiteCarte($id_adversaire, $id_joueur, $id_partie)
+    {
+        $this->db->select("login");
+        $this->db->from("main");
+        $this->db->where("num_manche", $this->getCurrentManche($id_partie));
+        $this->db->where("login", $id_adversaire);
+        $this->db->or_where("login", $id_joueur);
+        $this->db->order_by("id_carte", "ASC");
+        $this->db->limit(1);
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
+    public function echangeMain_m($id_adversaire, $id_joueur, $id_partie)
+    {
+        $this->db->select("id_carte");
+        $this->db->from("main");
+        $this->db->where("num_manche", $this->getCurrentManche($id_partie));
+        $this->db->where("login", $id_adversaire);
+        $carteAdverse = $this->db->get();
+
+        $this->db->set('login', $id_joueur, FALSE);
+        $this->db->where("num_manche", $this->getCurrentManche($id_partie));
+        $this->db->where("login", $id_adversaire);
+        $this->db->update('main');
+
+        $this->db->set('login', $id_joueur, FALSE);
+        $this->db->where("num_manche", $this->getCurrentManche($id_partie));
+        $this->db->where("login", $id_joueur);
+        $this->db->where("id_carte", $carteAdverse);
+        $this->db->update('main');
+    }
+
+    private function piocheIsEmpty($num_manche) {
 		$this->db->from("est_disponible");
 		$this->db->where('num_manche', $num_manche);
 		$query = $this->db->get();
