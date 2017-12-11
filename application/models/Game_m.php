@@ -128,10 +128,10 @@ class Game_m extends CI_Model {
 	}
 
 	public function defausse($id_carte, $id_joueur, $id_partie) {
-		$this->db->delete("main");
 		$this->db->where("id_carte", $id_carte);
 		$this->db->where("login", $id_joueur);
 		$this->db->where("num_manche", $this->getCurrentManche($id_partie));
+		$this->db->delete("main");
 
 		$donnees = [
 			'login'    => $id_joueur, 'num_manche' => $this->getCurrentManche($id_partie), 'id_partie' => $id_partie,
@@ -141,23 +141,28 @@ class Game_m extends CI_Model {
 
 	}
 
-	public function pioche($id_joueur, $id_pioche, $id_partie) {
-		if (!$this->piocheOk($id_pioche)) return false;
+	public function pioche($id_joueur, $num_manche) {
+		$this->db->select("id_carte");
+		$this->db->from("est_disponible");
+		$this->db->order_by("rand()");
+		$this->db->limit(1);
+		$id_carte = $this->db->get();
 
-        $this->db->select("id_carte");
-        $this->db->from("est_disponible");
-        $this->db->order_by("rand()");
-        $this->db->limit(1);
-        $id_carte = $this->db->get();
+		$this->db->insert("main", [
+			'login' => $id_joueur, 'carte' => $id_carte, 'manche' => $num_manche
+		]);
 
-		$this->db->insert("main", ['login' => $id_joueur, 'carte' => $id_carte, 'manche' => $this->getCurrentManche($id_partie)]);
+		$this->db->where("num_manche", $num_manche);
+		$this->db->where("id_carte", $id_carte);
+		$this->db->limit(1);
+		$this->db->delete("est_disponible");
 	}
 
-	private function piocheOk($id_pioche) {
+	private function piocheIsEmpty($num_manche) {
 		$this->db->from("est_disponible");
-		$this->db->where('id_dispo', $id_pioche);
+		$this->db->where('num_manche', $num_manche);
 		$query = $this->db->get();
-		return $query->num_rows() != 0;
+		return $query->num_rows() == 0;
 	}
 
 	public function check_isFirstMasterPlayer($id_partie, $id_joueur) {
@@ -221,13 +226,37 @@ class Game_m extends CI_Model {
 	}
 
 	public function getWinner($id_partie) {
-
-		$this->db->from()
+		$this->db->select("num_manche");
+		$this->db->from("Manche");
+		$this->db->where("id_partie");
+		$query   = $this->db->get();
+		$joueurs = array();
+		foreach ($query->row_arrays() as $num_manche) ++$joueurs[$this->getIdWinnerManche($num_manche)];
+		arsort($joueurs);
+		return array_keys($joueurs)[0];
 	}
 
 	public function InitPioche($id_partie, $num_init_manche) {
-		$this->db->from()
+		$this->db->select("id_carte, nb_cartes");
+		$this->db->from("cartes");
+		$query  = $this->db->get();
+		$cartes = array();
+		foreach ($query->row_arrays() as $carte) for ($i = 0; $i < $carte['nb_cartes']; $i++) $cartes[] = array(
+			'num_manche' => $num_init_manche, 'id_carte'
+		);
+		return $this->db->insert_batch("est_disponible", $cartes);
 	}
+
+	public function InitMainJoueurs($id_partie, $num_init_manche) {
+		$joueurs = $this->getJoueursPartie($id_partie);
+		foreach ($joueurs as $joueur) $this->pioche($joueur['login'], $num_init_manche);
+	}
+
+	/*public function removeCartesEnFonctionNbJoueurs($id_partie, $nb_joueur) {
+		$nb_cartes_remove_fonction_nb_joueurs = array(2 => 3);
+
+
+	}*/
 
 
 }

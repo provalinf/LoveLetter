@@ -108,7 +108,8 @@ class Game_c extends CI_Controller {
 						'num_manche' => $nb_manche + 1, 'id_partie' => $id_partie
 					]);
 					$this->Game_m->InitPioche($id_partie, $num_init_manche);
-					$this->Game_m->InitMainJoueurs($num_init_manche);
+					$this->Game_m->InitMainJoueurs($id_partie, $num_init_manche);
+					//$this->Game_m->removeCartesEnFonctionNbJoueurs($id_partie, count($joueurs));
 
 					if ($num_init_manche == 1) {
 						$this->Game_m->defineJoueurSuivant($joueurs[0]['login'], $id_partie);
@@ -148,9 +149,10 @@ class Game_c extends CI_Controller {
 		echo json_encode($this->Game_m->defausse($id_carte, $id_joueur, $this->session->userdata('id_partie')));
 	}
 
-	public function piocher($id_joueur, $id_pioche) {
+	public function piocher($id_joueur) {
 		$this->check_isConnected();
-		echo json_encode($this->Game_m->pioche($id_joueur, $id_pioche, $this->session->userdata('id_partie')));
+		$id_partie = $this->session->userdata('id_partie');
+		echo json_encode($this->Game_m->pioche($id_partie, $this->Game_m->getCurrentManche($id_partie)));
 	}
 
 	public function action($id_carte) {
