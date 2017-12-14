@@ -6,7 +6,7 @@ class General_c extends CI_Controller {
 	public function __construct() {
 		parent::__construct();
 		$this->load->database();
-		$this->load->helper('url');
+		$this->load->helper(array('url', 'cookie'));
 		$this->load->library(array('session', 'Twig'));
 		$this->load->model('General_m');
 		$this->twig->addGlobal('globlogin', $this->session->userdata('login'));

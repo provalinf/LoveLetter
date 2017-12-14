@@ -224,13 +224,31 @@
 
 		function garde_action(id_cible, id_carte) {
 			$('#myModal').modal('hide');
-			console.log(id_cible+" "+id_carte);
-			$.getJSON("{{ base_url('Game_c/compareCarteJoueur/') }}"+id_cible+"/"+id_carte, function (result) {
+			console.log(id_cible + " " + id_carte);
+			$.getJSON("{{ base_url('Game_c/compareCarteJoueur/') }}" + id_cible + "/" + id_carte, function (result) {
 				if (result) {
 					console.log("ok");
-				}else {
+				} else {
 					console.log("pas ok");
 				}
+			});
+		}
+
+		function pretre(id_cible) {
+			$('#myModal').modal('hide');
+			console.log("pretre");
+			$.getJSON("{{ base_url('Game_c/voirMain') }}/" + id_cible, function (result) {
+				var contenu = "<img src='../../" + result['image'] + "' height='300'>";
+				launchModal(1, "Carte du joueur adverse", contenu);
+			});
+		}
+
+		function baron(id_cible) {
+			$('#myModal').modal('hide');
+			console.log("baron");
+			$.getJSON("{{ base_url('Game_c/getJoueurPlusPetiteCarte') }}/" + id_cible, function (result) {
+				var contenu = "<img src='../../" + result['image'] + "' height='300'>";
+				launchModal(1, "Carte du joueur adverse", contenu);
 			});
 		}
 
@@ -259,7 +277,21 @@
 					break;
 				case 2:
 					//Pretre
+
 					$.getJSON("{{ base_url('Game_c/getAdversaires') }}", function (result) {
+						console.log(result);
+						/*joueur_selected = */
+						var contenu = "";
+						for (var i = 0; i < result.length; i++) {
+							contenu += '<button type="button" class="btn btn-dark" onclick=pretre("' + result[i]['LOGIN'] + '")>' + result[i]['LOGIN'] + '</button>';
+						}
+						launchModal(1, "Selectionner la cible", contenu);
+
+						if (!result) {
+
+						}
+					});
+					/*$.getJSON("{{ base_url('Game_c/getAdversaires') }}", function (result) {
 						if (!result) {
 							var tab = JSON.parse(result);
 							var joueur_selected = $('#myModal').modal('show'); // popup qui propose les joueurs
@@ -276,11 +308,24 @@
 								}
 							});
 						}
-					});
+					});*/
 					break;
 				case 3:
 					//Baron
 					$.getJSON("{{ base_url('Game_c/getAdversaires') }}", function (result) {
+						console.log(result);
+						/*joueur_selected = */
+						var contenu = "";
+						for (var i = 0; i < result.length; i++) {
+							contenu += '<button type="button" class="btn btn-dark" onclick=baron("' + result[i]['LOGIN'] + '")>' + result[i]['LOGIN'] + '</button>';
+						}
+						launchModal(1, "Selectionner la cible", contenu);
+
+						if (!result) {
+
+						}
+					});
+					/*$.getJSON("{{ base_url('Game_c/getAdversaires') }}", function (result) {
 						if (!result) {
 							var tab = JSON.parse(result);
 							var joueur_selected = $('#myModal').modal('show'); // popup qui propose les joueurs
@@ -297,12 +342,14 @@
 								}
 							});
 						}
-					});
+					});*/
 					break;
 				case 4:
+					console.log("servante");
 					//Servante
 					break;
 				case 5:
+					console.log("prince");
 					//Prince
 					break;
 				case 6:
@@ -327,6 +374,7 @@
 					});
 					break;
 				case 7:
+					console.log("comtesse");
 					//Comtesse
 					break;
 				case 8:
@@ -340,7 +388,7 @@
 		}
 
 		$(document).ready(function () {
-				//intervals[0] = window.setInterval(refreshTimeConnect, actualisationInterval);
+				intervals[0] = window.setInterval(refreshTimeConnect, actualisationInterval);
 			}
 		);
 	</script>

@@ -6,11 +6,29 @@ class Users_c extends CI_Controller {
 		parent::__construct();
 		$this->load->database();
 		$this->load->library('twig');
-		$this->load->helper(array('form', 'url'));
+		$this->load->helper(array('form', 'url', 'cookie'));
 		$this->load->library(array('session', 'form_validation', 'encryption'));
 		$this->load->model('Users_m');
 		$this->twig->addGlobal('globlogin', $this->session->userdata('login'));
+		$this->loadCookies();
 	}
+
+	private function loadCookies() {
+		if (!empty($this->input->cookie('login')) && empty($this->session->userdata('login'))) {
+			$this->session->set_userdata('login', $this->input->cookie('login'));
+		}
+		if (!empty($this->input->cookie('id_partie')) && empty($this->session->userdata('id_partie'))) {
+			$this->session->set_userdata('id_partie', $this->input->cookie('id_partie'));
+		}
+
+		if ($this->input->cookie('login') != $this->session->userdata('login')) {
+			$this->input->set_cookie("login", $this->session->userdata('login'));
+		}
+		if ($this->input->cookie('id_partie') != $this->session->userdata('id_partie')) {
+			$this->input->set_cookie("id_partie", $this->session->userdata('id_partie'));
+		}
+	}
+
 	private function check_isConnected() {
 		if (!empty($this->session->userdata('login'))) redirect(base_url());
 	}

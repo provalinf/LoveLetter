@@ -193,9 +193,6 @@ class Game_m extends CI_Model {
 		$this->db->limit(1);
 		$query    = $this->db->get();
 		$id_carte = $query->row()->id_carte;
-		echo $id_carte;
-		/*print_r($query);
-		print_r($query->row_array());*/
 		$this->db->insert("Main", [
 			'login' => $id_joueur, 'id_carte' => $id_carte, 'num_manche' => $num_manche
 		]);
@@ -206,21 +203,34 @@ class Game_m extends CI_Model {
 		$this->db->delete("est_disponible");
 	}
 
-	public function getJoueurPlusPetiteCarte($id_adversaire, $id_joueur, $id_partie)
-	{
-		$this->db->select("login");
-		$this->db->from("main");
-		$this->db->where("num_manche", $this->getCurrentManche($id_partie));
-		$this->db->where("login", $id_adversaire);
-		$this->db->or_where("login", $id_joueur);
-		$this->db->order_by("id_carte", "ASC");
-		$this->db->limit(1);
+	/**
+	 * @param $id_adversaire
+	 * @param $id_joueur
+	 * @param $id_partie
+	 *
+	 * @return bool true si joueur < adversaire
+	 */
+	public function getJoueurPlusPetiteCarte($id_adversaire, $id_joueur, $id_partie) {
+		$num_manche = $this->getCurrentManche($id_partie);
+		$this->db->flush_cache();
+		$this->db->select("valeur");
+		$this->db->from("Main");
+		$this->db->join("Carte as c", "c.id_carte=main.id_carte");
+		$this->db->where("main.login", $id_joueur);
+		$this->db->where("main.num_manche", $num_manche);
 		$query = $this->db->get();
-		return $query->result_array();
+
+		$this->db->select("valeur");
+		$this->db->from("Main");
+		$this->db->join("Carte as c", "c.id_carte=main.id_carte");
+		$this->db->where("main.login", $id_adversaire);
+		$this->db->where("main.num_manche", $num_manche);
+		$query2 = $this->db->get();
+
+		return $query->row()->valeur < $query2->row()->valeur;
 	}
 
-	public function echangeMain_m($id_adversaire, $id_joueur, $id_partie)
-	{
+	public function echangeMain_m($id_adversaire, $id_joueur, $id_partie) {
 		$this->db->select("id_carte");
 		$this->db->from("main");
 		$this->db->where("num_manche", $this->getCurrentManche($id_partie));
@@ -244,7 +254,7 @@ class Game_m extends CI_Model {
 		$this->db->from("Defausse");
 		$this->db->where("login", $id_joueur);
 		$this->db->where("num_manche", $num_manche);
-		$query    = $this->db->get();
+		$query = $this->db->get();
 		return $query->result_array();
 	}
 
@@ -329,7 +339,7 @@ class Game_m extends CI_Model {
 		$this->db->where("m.id_partie", $id_partie);
 		$this->db->group_by("sm.num_manche");
 		$this->db->order_by("sm.score DESC, sm.num_manche DESC");
-		$this->db->limit(1,1);
+		$this->db->limit(1, 1);
 		$query = $this->db->get();
 		return $query->row()->login;
 	}
@@ -358,10 +368,9 @@ class Game_m extends CI_Model {
 	public function InitPioche($id_partie, $num_init_manche) {
 		$this->db->select("id_carte, nb_cartes");
 		$this->db->from("Carte");
-		$query  = $this->db->get();
+		$query      = $this->db->get();
 		$jeu_cartes = array();
-		foreach ($query->result_array() as $carte) for ($i = 0; $i < (int)$carte['nb_cartes']; $i++)
-			$jeu_cartes[] = array(
+		foreach ($query->result_array() as $carte) for ($i = 0; $i < (int)$carte['nb_cartes']; $i++) $jeu_cartes[] = array(
 			'num_manche' => $num_init_manche, 'id_carte' => $carte['id_carte']
 		);
 		return $this->db->insert_batch("Est_disponible", $jeu_cartes);
@@ -382,16 +391,6 @@ class Game_m extends CI_Model {
 		return $query->result_array();
 	}
 
-	/*public function getAdvers($id_partie, $id_joueur) {
-
-		$this->db->select("login");
-		$this->db->from("joueur");
-		$this->db->where("id_partie", $id_partie);
-		$this->db->where_not_in("login", $id_joueur);
-		$query = $this->db->get();
-		return $query->result_array();
-	}*/
-
 	public function getCartesSansG() {
 		$this->db->select("id_carte, image");
 		$this->db->from("Carte");
@@ -401,11 +400,13 @@ class Game_m extends CI_Model {
 	}
 
 	public function voirMain_m($id_joueur) {
-		$this->db->select("image");
-		$this->db->from("main");
-		$this->db->where("login", $id_joueur);
+		$this->db->select("c.id_carte, c.image");
+		$this->db->from("Main as m");
+		$this->db->join("Carte as c", "c.id_carte=m.id_carte");
+		$this->db->where("m.login", $id_joueur);
+		$this->db->limit(1);
 		$query = $this->db->get();
-		return $query->result_array();
+		return $query->row_array();
 	}
 
 }

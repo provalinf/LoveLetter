@@ -9,12 +9,29 @@ class Game_c extends CI_Controller {
 		parent::__construct();
 		$this->load->database();
 		$this->load->library('twig');
-		$this->load->helper(array('form', 'url'));
+		$this->load->helper(array('form', 'url', 'cookie'));
 		$this->load->library(array('session', 'form_validation', 'encryption'));
 		$this->load->model('Game_m');
 		$this->twig->addGlobal('globlogin', $this->session->userdata('login'));
 		$this->twig->addGlobal('globpartie', $this->session->userdata('id_partie'));
 		$this->check_isConnected();
+		$this->loadCookies();
+	}
+
+	private function loadCookies() {
+		if (!empty($this->input->cookie('login')) && empty($this->session->userdata('login'))) {
+			$this->session->set_userdata('login', $this->input->cookie('login'));
+		}
+		if (!empty($this->input->cookie('id_partie')) && empty($this->session->userdata('id_partie'))) {
+			$this->session->set_userdata('id_partie', $this->input->cookie('id_partie'));
+		}
+
+		if ($this->input->cookie('login') != $this->session->userdata('login')) {
+			$this->input->set_cookie("login", $this->session->userdata('login'));
+		}
+		if ($this->input->cookie('id_partie') != $this->session->userdata('id_partie')) {
+			$this->input->set_cookie("id_partie", $this->session->userdata('id_partie'));
+		}
 	}
 
 	private function check_isConnected() {
@@ -217,5 +234,15 @@ class Game_c extends CI_Controller {
 	public function voirMain($id_joueur) {
 		$this->check_isConnected();
 		echo json_encode($this->Game_m->voirMain_m($id_joueur));
+	}
+
+	public function getJoueurPlusPetiteCarte($id_adversaire) {
+		$this->check_isConnected();
+		$id_partie = $this->session->userdata('id_partie');
+		if ($this->Game_m->getJoueurPlusPetiteCarte($id_adversaire, $this->session->userdata('login'), $id_partie)) {
+			$this->Game_m->deleteMain($this->session->userdata('login'), $this->session->userdata('num_manche'));
+		} else {
+			$this->Game_m->deleteMain($id_adversaire, $this->session->userdata('num_manche'));
+		}
 	}
 }
